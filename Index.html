@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#161b22" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="application-name" content="Book Content Guide" />
+<meta name="apple-mobile-web-app-title" content="BookGuide" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234c6759'/%3E%3Cpath d='M14 16h16c6 0 10 3 10 8v28c-2-3-5-4-10-4H14V16zm36 0H38c-6 0-10 3-10 8v28c2-3 5-4 10-4h12V16z' fill='white' opacity='.94'/%3E%3C/svg%3E" />
+<title>Book Content Guide v1.10.3</title>
+<style>
+  :root{
+    --bg:#f5f3ee;--panel:#ffffff;--panel2:#ece8df;--ink:#17202a;--muted:#6d756f;--line:#ddd8cd;
+    --accent:#4c6759;--accent2:#d6b265;--warn:#b8683a;--danger:#a54848;--good:#3b7a57;
+    --hero1:#1b2420;--hero2:#33483e;--heroText:#ffffff;--heroMuted:#e8eee9;
+    --input:#fbfaf7;--header:rgba(245,243,238,.93);--nav:rgba(255,255,255,.95);
+    --noticeBg:#fff6e8;--noticeBorder:#f0d4aa;--noticeText:#6f4d26;
+    --confidenceBg:#edf4ef;--confidenceText:#2f6245;--sourceBg:#eef3f1;--sourceText:#3c6253;
+    --shadow:0 10px 30px rgba(27,31,35,.08);--radius:22px;--radius2:14px;
+  }
+  *{box-sizing:border-box} body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+  button,input,select{font:inherit} button{cursor:pointer}
+  .app-shell{min-height:100vh;padding-bottom:92px}
+  header{position:sticky;top:0;z-index:20;background:var(--header);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .topbar{max-width:980px;margin:auto;padding:14px 18px;display:flex;align-items:center;gap:12px;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:10px}.brandmark{width:42px;height:42px;border-radius:14px;background:var(--ink);color:white;display:grid;place-items:center;font-size:22px;box-shadow:var(--shadow)}
+  .brand h1{font-size:17px;margin:0}.brand small{display:block;color:var(--muted);margin-top:2px}
+  .icon-btn{border:1px solid var(--line);background:var(--panel);border-radius:12px;width:42px;height:42px}
+  main{max-width:980px;margin:0 auto;padding:18px}
+  .hero{background:linear-gradient(135deg,var(--hero1),var(--hero2));color:var(--heroText);padding:24px;border-radius:28px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .hero:after{content:"";position:absolute;width:170px;height:170px;border-radius:50%;right:-65px;top:-55px;background:rgba(214,178,101,.2)}
+  .eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:800;opacity:.8}.hero h2{font-size:30px;line-height:1.05;margin:8px 0 10px;max-width:650px}.hero p{margin:0;color:var(--heroMuted);max-width:650px;line-height:1.5}
+  .search-card{background:var(--panel);padding:14px;border-radius:20px;margin-top:16px;box-shadow:var(--shadow);border:1px solid var(--line)}
+  .search-row{display:flex;gap:10px}.search-row input{flex:1;border:1px solid var(--line);background:var(--input);border-radius:14px;padding:14px 15px;outline:none}.search-row input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(76,103,89,.12)}
+  .btn{border:0;border-radius:14px;padding:12px 16px;background:var(--accent);color:white;font-weight:800}.btn.secondary{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line)}.btn.full{width:100%}
+  .stack{display:grid;gap:14px}.section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-top:22px}.section-head h2{font-size:18px;margin:0}.muted{color:var(--muted)}.small{font-size:13px}.tiny{font-size:11px}
+  .result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+  .book-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:14px;display:grid;grid-template-columns:82px 1fr;gap:14px;box-shadow:0 5px 18px rgba(27,31,35,.05)}
+  .cover{width:82px;height:116px;border-radius:10px;background:var(--panel2);object-fit:cover;border:1px solid var(--line)}.book-card h3{font-size:16px;margin:0 0 5px}.book-meta{font-size:12px;color:var(--muted);line-height:1.45}.book-actions{display:flex;gap:8px;margin-top:10px}.book-actions .btn{padding:9px 12px;font-size:12px}
+  .empty{border:1px dashed var(--line);border-radius:18px;padding:26px;text-align:center;color:var(--muted);background:rgba(255,255,255,.5)}
+  .detail{display:grid;gap:14px}.detail-top{background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:18px;display:grid;grid-template-columns:110px 1fr;gap:18px;box-shadow:var(--shadow)}.detail-top .cover{width:110px;height:160px}.detail-top h2{margin:0 0 6px;font-size:24px}.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.chip{background:var(--panel2);border:1px solid var(--line);padding:6px 9px;border-radius:999px;font-size:11px;font-weight:700}
+  .rating-overview{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:17px;box-shadow:0 5px 18px rgba(27,31,35,.04)}
+  .score-big{font-size:44px;font-weight:900;line-height:1}.score-label{font-size:12px;color:var(--muted)}
+  .confidence{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:7px 10px;background:var(--confidenceBg);color:var(--confidenceText);font-size:12px;font-weight:800;margin-top:10px}
+  .warning-grid{display:grid;gap:10px}.warning-row{display:grid;grid-template-columns:150px 1fr 42px;gap:10px;align-items:center}.bar{height:9px;background:var(--panel2);border-radius:999px;overflow:hidden}.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--good),var(--accent2),var(--danger));border-radius:inherit}.level{font-size:12px;font-weight:800;text-align:right}.warning-name{font-size:13px;font-weight:750}
+  .notice{border-radius:16px;padding:12px 13px;background:var(--noticeBg);border:1px solid var(--noticeBorder);color:var(--noticeText);font-size:13px;line-height:1.45}
+  .rate-card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:17px}.rate-card h3{margin:0 0 4px}.rate-group{padding:14px 0;border-top:1px solid var(--line)}.rate-group:first-of-type{border-top:0}.rate-group-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:9px}.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}.scale button{border:1px solid var(--line);background:var(--input);padding:10px 4px;border-radius:11px;font-size:11px;font-weight:800;color:var(--muted)}.scale button.selected{background:var(--accent);color:white;border-color:var(--accent)}
+  .obs-details{margin-top:10px;border:1px solid var(--line);border-radius:14px;background:var(--panel2);overflow:hidden}.obs-details summary{cursor:pointer;padding:10px 12px;font-size:11px;font-weight:900;color:var(--muted)}.obs-body{padding:0 12px 12px}.obs-label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:900;margin:9px 0 6px}.obs-frequency{display:flex;gap:6px;flex-wrap:wrap}.obs-frequency button,.obs-chip{border:1px solid var(--line);background:var(--input);color:var(--ink);border-radius:999px;padding:7px 9px;font-size:10px;font-weight:800}.obs-frequency button.selected,.obs-chip.selected{background:var(--accent);color:#fff;border-color:var(--accent)}.obs-chips{display:flex;gap:6px;flex-wrap:wrap}.community-detail-card{border:1px solid var(--line);background:var(--panel2);border-radius:14px;padding:11px;margin-top:8px}.community-detail-card strong{display:block;margin-bottom:5px}.community-detail-card .small{line-height:1.5}.source-strategy{display:grid;gap:8px;margin-top:10px}.source-strategy-item{border:1px solid var(--line);background:var(--panel2);border-radius:14px;padding:11px}.source-strategy-item strong{display:block}.source-strategy-item span{display:block;color:var(--muted);font-size:11px;line-height:1.45;margin-top:3px}
+  .age-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}.age-grid button{border:1px solid var(--line);background:var(--input);padding:10px 3px;border-radius:11px;font-weight:800;font-size:11px}.age-grid button.selected{background:var(--accent);color:white}
+  .stars{display:flex;gap:6px}.star{font-size:28px;border:0;background:transparent;color:#c9c5bc;padding:0}.star.selected{color:#d6a93f}
+  .saved-row{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px;display:flex;gap:12px;align-items:center}.saved-row img{width:48px;height:68px;object-fit:cover;border-radius:7px;background:var(--panel2)}.saved-row .grow{flex:1}.saved-row strong{display:block}
+  .settings-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:17px}.toggle-row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.toggle-row:last-child{border-bottom:0}
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:30;background:var(--nav);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:8px 8px calc(8px + env(safe-area-inset-bottom));display:flex;justify-content:center}
+  .nav-inner{width:min(720px,100%);display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.nav-btn{border:0;background:transparent;border-radius:14px;padding:9px 4px;color:var(--muted);font-size:11px;font-weight:800}.nav-btn span{display:block;font-size:19px;margin-bottom:2px}.nav-btn.active{background:var(--panel2);color:var(--ink)}
+  dialog{border:0;border-radius:22px;width:min(560px,calc(100% - 24px));padding:0;box-shadow:0 30px 90px rgba(0,0,0,.25)}dialog::backdrop{background:rgba(20,25,22,.55)}.modal{padding:20px}.modal h2{margin-top:0}
+  .source-pill{font-size:10px;font-weight:800;background:var(--sourceBg);color:var(--sourceText);border-radius:999px;padding:5px 7px;display:inline-block;margin-top:8px}
+  .privacy-line{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.4}
+  .theme-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+  .theme-card{appearance:none;text-align:left;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:17px;padding:12px;display:grid;gap:9px;transition:.18s ease;box-shadow:0 3px 12px rgba(0,0,0,.03)}
+  .theme-card:hover{transform:translateY(-1px)}.theme-card.selected{border:2px solid var(--accent);padding:11px;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 14%,transparent)}
+  .theme-swatches{display:flex;height:34px;border-radius:10px;overflow:hidden;border:1px solid rgba(127,127,127,.18)}.theme-swatches span{flex:1}
+  .theme-card strong{font-size:13px}.theme-card small{color:var(--muted);font-size:10px}.theme-card .chosen{font-size:10px;color:var(--accent);font-weight:900}
+  .theme-section-title{display:flex;justify-content:space-between;align-items:center;gap:10px}.theme-section-title h2{margin:0}.mode-badge{font-size:10px;border-radius:999px;padding:5px 8px;background:var(--panel2);color:var(--muted);font-weight:800}
+
+  .unified-search-note{font-size:11px;color:var(--muted);margin-top:9px;line-height:1.45}
+  .search-status{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:12px 14px}
+  .search-spinner{width:17px;height:17px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:bcgSpin .8s linear infinite;flex:0 0 auto}
+  @keyframes bcgSpin{to{transform:rotate(360deg)}}
+  .data-details{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+  .data-details summary{cursor:pointer;color:var(--muted);font-size:11px;font-weight:800}
+  .data-details p{margin:8px 0 0;color:var(--muted);font-size:11px;line-height:1.45}
+  .catalog-btn{border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:14px;padding:11px 12px;font-weight:800;text-align:left}
+  .catalog-btn small{display:block;color:var(--muted);font-weight:600;margin-top:2px}
+  .catalog-btn.busy{opacity:.62;pointer-events:none}
+  .add-book-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .form-field{display:grid;gap:6px;margin:10px 0}.form-field label{font-size:12px;font-weight:800}.form-field input,.form-field textarea,.form-field select{width:100%;border:1px solid var(--line);background:var(--input);color:var(--ink);border-radius:12px;padding:11px 12px}.form-field textarea{min-height:90px;resize:vertical}
+  .analysis-card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:17px;box-shadow:0 5px 18px rgba(27,31,35,.04)}
+  .analysis-status{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.analysis-kpi{background:var(--panel2);border-radius:14px;padding:10px}.analysis-kpi strong{display:block;font-size:18px}.analysis-kpi span{font-size:10px;color:var(--muted)}
+  .source-stack{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.source-stack .source-pill{margin-top:0}
+  .rights-badge{background:var(--confidenceBg);color:var(--confidenceText);font-size:10px;font-weight:900;padding:6px 8px;border-radius:999px;display:inline-block;margin-top:8px}
+  .upload-box{border:1px dashed var(--line);background:var(--panel2);border-radius:16px;padding:14px;margin:12px 0}.upload-box input{width:100%}
+  .analysis-note{font-size:11px;color:var(--muted);line-height:1.5}
+
+  .evidence-badge{display:inline-flex;align-items:center;gap:6px;background:var(--confidenceBg);color:var(--confidenceText);border-radius:999px;padding:5px 8px;font-size:10px;font-weight:900;margin-top:7px}
+  .source-card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:17px;box-shadow:0 5px 18px rgba(27,31,35,.04)}
+
+  .content-explanations{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:17px;box-shadow:0 5px 18px rgba(27,31,35,.04)}
+  .spoiler-note{background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:16px;padding:12px 14px;font-size:13px;line-height:1.5;margin:12px 0 14px}
+  .content-detail{border:1px solid var(--line);border-radius:16px;background:var(--panel2);overflow:hidden;margin-top:9px}
+  .content-detail summary{list-style:none;cursor:pointer;padding:13px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:800}
+  .content-detail summary::-webkit-details-marker{display:none}
+  .content-detail summary:after{content:'＋';font-size:18px;color:var(--muted)}
+  .content-detail[open] summary:after{content:'−'}
+  .detail-rating{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .severity-pill{font-size:11px;font-weight:900;padding:5px 8px;border-radius:999px;background:var(--soft);color:var(--ink);border:1px solid var(--line)}
+  .content-detail-body{padding:0 14px 14px;color:var(--ink);font-size:14px;line-height:1.65}
+  .content-detail-body p{margin:0}
+  .age-rationale{border-left:4px solid var(--accent2);padding-left:12px;margin-top:12px;font-size:14px;line-height:1.6}
+  .detail-metrics{display:flex;flex-wrap:wrap;gap:7px;margin:2px 0 12px}
+  .detail-metric{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:7px 9px;min-width:92px}
+  .detail-metric small{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:800}
+  .detail-metric strong{display:block;margin-top:2px;font-size:12px}
+  .detail-subhead{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:900;margin:13px 0 6px}
+  .detail-list{margin:0;padding-left:19px}.detail-list li{margin:5px 0;line-height:1.55}
+  .score-rationale{margin-top:12px;padding:10px 12px;border-radius:13px;background:var(--soft);border:1px solid var(--line);line-height:1.55}
+  .v16-primary-detail{margin:2px 0 14px;padding:13px 14px;border-radius:14px;background:var(--panel);border:1px solid var(--line);font-size:14px;line-height:1.72}.v16-primary-detail .detail-subhead{margin-top:0}.v16-primary-detail p{margin:0}
+  .concern-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.concern-tags span{font-size:11px;font-weight:750;padding:5px 8px;border-radius:999px;background:var(--panel);border:1px solid var(--line)}
+
+  .source-list{display:grid;gap:10px;margin-top:12px}.source-item{border:1px solid var(--line);background:var(--input);border-radius:15px;padding:12px}.source-item a{color:var(--accent);font-weight:850;text-decoration:none}.source-item a:hover{text-decoration:underline}
+  .trigger-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.trigger-chip{border:1px solid var(--noticeBorder);background:var(--noticeBg);color:var(--noticeText);border-radius:999px;padding:6px 9px;font-size:11px;font-weight:800}
+  .method-note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:10px}.pre-rated{background:var(--confidenceBg);color:var(--confidenceText);font-size:10px;font-weight:900;border-radius:999px;padding:5px 7px;display:inline-block;margin-left:6px}
+  .level-text{font-size:9px;color:var(--muted);font-weight:700;display:block;text-align:right;white-space:nowrap}.warning-value{display:flex;flex-direction:column;align-items:flex-end;gap:1px}
+  .search-source-line{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.search-source-line span{font-size:10px;border-radius:999px;padding:4px 7px;background:var(--panel2);color:var(--muted);font-weight:800}
+  .search-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:10px}.network-note{display:flex;gap:10px;align-items:flex-start;margin-top:10px;padding:10px 11px;border:1px solid var(--line);border-radius:14px;background:var(--input);font-size:11px;color:var(--muted);line-height:1.45}.network-note strong{color:var(--ink)}
+  .metadata-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-top:12px}.metadata-item{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:10px 11px;min-width:0}.metadata-item span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:850;margin-bottom:3px}.metadata-item strong{display:block;font-size:13px;overflow-wrap:anywhere}.description-text{font-size:13px;line-height:1.65;color:var(--ink);white-space:pre-line}.save-confirm{font-size:11px;color:var(--confidenceText);font-weight:850;margin-top:7px}
+  @media(max-width:700px){.hero h2{font-size:26px}.search-row{flex-direction:column}.detail-top{grid-template-columns:82px 1fr}.detail-top .cover{width:82px;height:120px}.rating-overview{grid-template-columns:1fr}.warning-row{grid-template-columns:120px 1fr 36px}.age-grid{grid-template-columns:repeat(4,1fr)}}
+  @media(max-width:520px){.theme-grid{grid-template-columns:1fr}}
+  @media(max-width:430px){main{padding:14px}.book-card{grid-template-columns:68px 1fr}.cover{width:68px;height:98px}.warning-row{grid-template-columns:105px 1fr 30px;gap:7px}.hero{padding:20px}.hero h2{font-size:23px}}
+
+  .search-priority{display:grid;grid-template-columns:1.25fr .85fr .75fr;gap:8px;margin:12px 0 2px}
+  .priority-card{border:1px solid var(--line);background:var(--panel2);border-radius:14px;padding:10px 11px;display:grid;gap:3px}
+  .priority-card.primary{border:2px solid var(--accent);background:var(--soft)}
+  .priority-card strong{font-size:12px}.priority-card span{font-size:10px;color:var(--muted);line-height:1.35}
+  .author-browse-btn{width:100%;margin-top:9px}
+  .series-group{display:grid;gap:10px;margin-top:14px}.series-block{display:grid;gap:9px}
+  .series-header{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;padding:4px 2px}
+  .series-header h3{margin:0;font-size:17px}.series-header span{font-size:10px;color:var(--muted)}
+  .contribute-prompt{border:1px solid var(--line);background:linear-gradient(135deg,var(--soft),var(--panel));border-radius:20px;padding:16px;display:grid;gap:9px}
+  .contribute-prompt h3{margin:0;font-size:18px}.contribute-prompt p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+  .contribute-mini{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:900;color:var(--accent);margin-top:7px}
+  .saved-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .obs-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.obs-field{display:grid;gap:5px}
+  .obs-field .obs-label{margin:0}
+  @media(max-width:620px){.search-priority{grid-template-columns:1fr}.obs-grid{grid-template-columns:1fr}.saved-actions{justify-content:flex-start}}
+
+</style>
+</head>
+<body>
+<div class="app-shell">
+<header><div class="topbar"><div class="brand"><div class="brandmark">📚</div><div><h1>Book Content Guide</h1><small>Know what’s inside before they read.</small></div></div><button class="icon-btn" onclick="openAbout()">ⓘ</button></div></header>
+<main id="app"></main>
+<nav class="bottom-nav"><div class="nav-inner">
+  <button class="nav-btn active" data-route="search"><span>🔎</span>Search</button>
+  <button class="nav-btn" data-route="saved"><span>🔖</span>Saved</button>
+  <button class="nav-btn" data-route="rate"><span>⭐</span>Rate</button>
+  <button class="nav-btn" data-route="settings"><span>⚙️</span>Settings</button>
+</div></nav>
+<dialog id="modal"><div class="modal" id="modalContent"></div></dialog>
+</div>
+<script>
+const themes={
+  parchment:{name:'Parchment',mode:'Light',desc:'Warm paper and forest green',vars:{bg:'#f5f3ee',panel:'#ffffff',panel2:'#ece8df',ink:'#17202a',muted:'#6d756f',line:'#ddd8cd',accent:'#4c6759',accent2:'#d6b265',warn:'#b8683a',danger:'#a54848',good:'#3b7a57',hero1:'#1b2420',hero2:'#33483e',heroText:'#ffffff',heroMuted:'#e8eee9',input:'#fbfaf7',header:'rgba(245,243,238,.93)',nav:'rgba(255,255,255,.95)',noticeBg:'#fff6e8',noticeBorder:'#f0d4aa',noticeText:'#6f4d26',confidenceBg:'#edf4ef',confidenceText:'#2f6245',sourceBg:'#eef3f1',sourceText:'#3c6253'}},
+  rose:{name:'Rose & Violet',mode:'Light',desc:'Layered pinks with purple accents',vars:{bg:'#fff1f7',panel:'#fffafd',panel2:'#f8dce9',ink:'#3c2333',muted:'#846274',line:'#efc9dc',accent:'#c94f88',accent2:'#8c5bc4',warn:'#cf6b82',danger:'#a93b68',good:'#7e5aa8',hero1:'#b63f79',hero2:'#7b4bb0',heroText:'#fff9fc',heroMuted:'#f9deea',input:'#fff6fa',header:'rgba(255,241,247,.94)',nav:'rgba(255,250,253,.96)',noticeBg:'#fce8f2',noticeBorder:'#eab9d2',noticeText:'#71334f',confidenceBg:'#f1e6f8',confidenceText:'#68428f',sourceBg:'#f8e3ee',sourceText:'#8a3e66'}},
+  blossom:{name:'Blossom',mode:'Light',desc:'Soft coral, blush and plum',vars:{bg:'#fff6f3',panel:'#ffffff',panel2:'#fbe6df',ink:'#402a2d',muted:'#80686a',line:'#efd7d1',accent:'#d86f79',accent2:'#7b547d',warn:'#c6754d',danger:'#a64e5b',good:'#67836b',hero1:'#b95766',hero2:'#76516f',heroText:'#ffffff',heroMuted:'#f9e4e6',input:'#fffaf8',header:'rgba(255,246,243,.94)',nav:'rgba(255,255,255,.96)',noticeBg:'#fff0e8',noticeBorder:'#efcfbf',noticeText:'#754833',confidenceBg:'#eef3ec',confidenceText:'#4d684f',sourceBg:'#f7e9ee',sourceText:'#704b5d'}},
+  sky:{name:'Sky',mode:'Light',desc:'Clean blue with aqua accents',vars:{bg:'#eef7fb',panel:'#ffffff',panel2:'#dfeff6',ink:'#20313d',muted:'#657b88',line:'#cfe2ea',accent:'#377ca3',accent2:'#49a7a0',warn:'#b77746',danger:'#a64c55',good:'#347c64',hero1:'#245d7c',hero2:'#327f86',heroText:'#ffffff',heroMuted:'#e0f2f5',input:'#f8fcfe',header:'rgba(238,247,251,.94)',nav:'rgba(255,255,255,.96)',noticeBg:'#fff4e8',noticeBorder:'#eed3b4',noticeText:'#6f4c2e',confidenceBg:'#e5f3ee',confidenceText:'#31624f',sourceBg:'#e4f1f6',sourceText:'#356278'}},
+  lavender:{name:'Lavender',mode:'Light',desc:'Lilac, indigo and cream',vars:{bg:'#f5f1fb',panel:'#fffefe',panel2:'#e9e0f4',ink:'#302b3c',muted:'#746b83',line:'#ddd2ea',accent:'#735ba7',accent2:'#c18aab',warn:'#b77458',danger:'#9d4e66',good:'#547b72',hero1:'#514072',hero2:'#80659c',heroText:'#ffffff',heroMuted:'#eee6f7',input:'#fbf9fe',header:'rgba(245,241,251,.94)',nav:'rgba(255,254,254,.96)',noticeBg:'#f8ecf2',noticeBorder:'#e4cbd9',noticeText:'#70485e',confidenceBg:'#ece8f6',confidenceText:'#594c7e',sourceBg:'#eee8f6',sourceText:'#65527e'}},
+  midnight:{name:'Midnight',mode:'Dark',desc:'Charcoal with cool blue',vars:{bg:'#10161d',panel:'#18212a',panel2:'#222e39',ink:'#f1f5f8',muted:'#a5b2bd',line:'#31404d',accent:'#79a9c7',accent2:'#d2a65e',warn:'#db9866',danger:'#df7378',good:'#72b58f',hero1:'#182633',hero2:'#24435a',heroText:'#ffffff',heroMuted:'#dbe9f0',input:'#111b24',header:'rgba(16,22,29,.94)',nav:'rgba(24,33,42,.96)',noticeBg:'#32271f',noticeBorder:'#5f4735',noticeText:'#f0c8a6',confidenceBg:'#20352c',confidenceText:'#9ed2b2',sourceBg:'#22333e',sourceText:'#a5cde3'}},
+  plum:{name:'Deep Plum',mode:'Dark',desc:'Plum, berry and orchid',vars:{bg:'#1c151f',panel:'#281e2c',panel2:'#35273b',ink:'#f8f0f7',muted:'#c1afbf',line:'#49374f',accent:'#d18bb7',accent2:'#9c7bd3',warn:'#d58c77',danger:'#e17491',good:'#8cb99a',hero1:'#432442',hero2:'#684061',heroText:'#fff8fd',heroMuted:'#ecd9e8',input:'#221927',header:'rgba(28,21,31,.95)',nav:'rgba(40,30,44,.97)',noticeBg:'#3b2932',noticeBorder:'#664353',noticeText:'#efc6d7',confidenceBg:'#322b45',confidenceText:'#c3abe5',sourceBg:'#3a2940',sourceText:'#dda9cc'}},
+  forest:{name:'Forest Night',mode:'Dark',desc:'Deep green and antique gold',vars:{bg:'#111a17',panel:'#1b2722',panel2:'#26372f',ink:'#eff5f1',muted:'#a8b8af',line:'#34483e',accent:'#86b79b',accent2:'#d3b46f',warn:'#d49463',danger:'#d96d70',good:'#79b58e',hero1:'#1c3429',hero2:'#335544',heroText:'#ffffff',heroMuted:'#dcebe2',input:'#14201b',header:'rgba(17,26,23,.95)',nav:'rgba(27,39,34,.97)',noticeBg:'#332a20',noticeBorder:'#5f4c35',noticeText:'#efd2a9',confidenceBg:'#22382d',confidenceText:'#a8d6ba',sourceBg:'#26382f',sourceText:'#a9d0b9'}},
+  graphite:{name:'Graphite',mode:'Dark',desc:'Neutral black, silver and amber',vars:{bg:'#151515',panel:'#202020',panel2:'#2b2b2b',ink:'#f5f5f3',muted:'#b3b3ad',line:'#3d3d3a',accent:'#d4d0c6',accent2:'#d2a34e',warn:'#d38b55',danger:'#d76969',good:'#83aa85',hero1:'#242424',hero2:'#3a3833',heroText:'#ffffff',heroMuted:'#e5e3de',input:'#191919',header:'rgba(21,21,21,.95)',nav:'rgba(32,32,32,.97)',noticeBg:'#352b1e',noticeBorder:'#5e4b2f',noticeText:'#efd09c',confidenceBg:'#243329',confidenceText:'#afd0b2',sourceBg:'#30302d',sourceText:'#d1cec4'}}
+};
+const categories=[
+  ['language','Language'],['violence','Violence / gore'],['sexual','Sexual content'],['romance','Romance / intimacy'],['substances','Drugs / alcohol'],['fear','Fear / horror'],['death','Death / grief'],['bullying','Bullying'],['abuse','Abuse / neglect'],['selfharm','Self-harm / suicide'],['hate','Discrimination / hate'],['animal','Animal harm']
+];
+const scaleLabels=['None','Mild','Moderate','Strong','Extreme'];
+const ageOptions=['All','6+','8+','10+','12+','14+','16+','18+'];
+const observationFrequencies=['Once','A few times','Repeated','Frequent'];
+const observationDetailLevels=['Implied / off-page','Briefly described','Clearly described','Detailed / graphic'];
+const observationLocations=['Beginning','Middle','End','Throughout'];
+const observationOptions={
+  language:['Mild swearing','Strong profanity','Sexual/vulgar language','Racial/ethnic slurs','Religious slurs','Other discriminatory slurs','Harsh insults/name-calling'],
+  violence:['Fighting/punching/kicking','Shooting/gun violence','Stabbing/cutting','Choking/strangling','Blood/injury detail','Broken bones/serious injury','Torture','Child-on-child violence','War/mass casualty','Graphic gore/dismemberment'],
+  sexual:['Nudity','Sexual references/jokes','Implied sex','Explicit sexual activity','Sexual anatomy discussed','Sexual assault threat','Sexual assault/rape'],
+  romance:['Crush/attraction','Dating','Kissing','Making out','Relationship conflict','Intimate relationship'],
+  substances:['Alcohol use','Drunkenness','Smoking/nicotine','Marijuana','Other drug use','Prescription misuse','Overdose/addiction'],
+  fear:['Threats/stalking','Kidnapping/captivity','Monsters/supernatural fear','Body horror','Intense survival peril','Nightmares/hallucinations','Psychological terror'],
+  death:['Death discussed','On-page death','Child death','Parent/family death','Murder','Mass casualty/genocide','Funeral/grief'],
+  bullying:['Verbal bullying','Physical bullying','Social exclusion','Humiliation/hazing','Threats/intimidation','Disability-based bullying','Online harassment'],
+  abuse:['Emotional abuse','Physical abuse','Child abuse','Neglect','Domestic violence','Coercion/control','Institutional manipulation'],
+  selfharm:['Self-harm reference','Self-harm act','Suicidal thoughts','Suicide attempt','Suicide death','Intentional overdose','Suicide-by-proxy/police'],
+  hate:['Racism','Racial slurs','Antisemitism','Religious bigotry','Homophobia','Transphobia','Sexism/misogyny','Xenophobia','Ableism/disability discrimination'],
+  animal:['Animal threatened','Animal injury','Pet death','Animal death','Hunting for food','Animal cruelty/torture','Graphic animal harm']
+};
+const builtInBooks=[
+  {title:"Ender's Game",author:'Orson Scott Card',year:'1985',subjects:['Science Fiction','Young Adult','Military science fiction']},
+  {title:"Harry Potter and the Sorcerer's Stone",author:'J.K. Rowling',year:'1997',subjects:['Fantasy','Middle Grade','Magic'],aliases:["Harry Potter and the Philosopher's Stone"]},
+  {title:'The Hunger Games',author:'Suzanne Collins',year:'2008',subjects:['Science Fiction','Young Adult','Dystopia']},
+  {title:'The Lightning Thief',author:'Rick Riordan',year:'2005',subjects:['Fantasy','Middle Grade','Mythology']},
+  {title:'The Hobbit',author:'J.R.R. Tolkien',year:'1937',subjects:['Fantasy','Adventure']},
+  {title:'The Giver',author:'Lois Lowry',year:'1993',subjects:['Science Fiction','Young Adult','Dystopia']},
+  {title:"Charlotte's Web",author:'E.B. White',year:'1952',subjects:['Children','Animals','Friendship']},
+  {title:'Holes',author:'Louis Sachar',year:'1998',subjects:['Adventure','Middle Grade']},
+  {title:'Wonder',author:'R.J. Palacio',year:'2012',subjects:['Coming of Age','Middle Grade','School']},
+  {title:'To Kill a Mockingbird',author:'Harper Lee',year:'1960',subjects:['Literary Fiction','Classics']},
+  {title:'The Outsiders',author:'S.E. Hinton',year:'1967',subjects:['Coming of Age','Young Adult']},
+  {title:'Hatchet',author:'Gary Paulsen',year:'1987',subjects:['Adventure','Survival','Middle Grade']},
+  {title:'Lord of the Flies',author:'William Golding',year:'1954',subjects:['Literary Fiction','Classics']},
+  {title:'Fahrenheit 451',author:'Ray Bradbury',year:'1953',subjects:['Science Fiction','Dystopia','Classics']},
+  {title:'1984',author:'George Orwell',year:'1949',subjects:['Literary Fiction','Dystopia','Classics'],aliases:['Nineteen Eighty-Four']},
+  {title:'Divergent',author:'Veronica Roth',year:'2011',subjects:['Science Fiction','Young Adult','Dystopia']},
+  {title:'The Maze Runner',author:'James Dashner',year:'2009',subjects:['Science Fiction','Young Adult','Dystopia']},
+  {title:'Diary of a Wimpy Kid',author:'Jeff Kinney',year:'2007',subjects:['Humor','Middle Grade','School']},
+  {title:'Twilight',author:'Stephenie Meyer',year:'2005',subjects:['Young Adult','Fantasy','Romance']},
+  {title:'The Fault in Our Stars',author:'John Green',year:'2012',subjects:['Young Adult','Romance','Coming of Age']},
+  {title:'Animal Farm',author:'George Orwell',year:'1945',subjects:['Classics','Political satire']},
+  {title:'The Great Gatsby',author:'F. Scott Fitzgerald',year:'1925',subjects:['Classics','Literary Fiction']},
+  {title:'The Catcher in the Rye',author:'J.D. Salinger',year:'1951',subjects:['Classics','Coming of Age']},
+  {title:'Of Mice and Men',author:'John Steinbeck',year:'1937',subjects:['Classics','Literary Fiction']},
+  {title:'Pride and Prejudice',author:'Jane Austen',year:'1813',subjects:['Classics','Romance']}
+].map((b,i)=>({...b,source:'Built-in catalog',sourceId:'builtin-'+i,isbn:'',publisher:'',description:'',cover:'',pageCount:''}));
+
+// Pre-established ratings are normalized factual summaries, not copied review text.
+// Scale mapping: not present=1, very little/a little=2, some=3, a lot=4; 5 is reserved for unusually extreme content.
+const establishedRatings=[
+{
+    title:"Ender's Game",
+    author:'Orson Scott Card',
+    age:'12+',
+    categories:{language:4,violence:4,sexual:2,romance:1,substances:1,fear:4,death:4,bullying:4,abuse:4,selfharm:2,hate:4,animal:4},
+    triggers:['Animal torture/death','Blood and injury detail','Child-on-child killing','Death','Genocide/xenocide','Psychological manipulation','Racial and antisemitic slurs','Suicide reference','Surreal body-horror imagery'],
+    profileType:'editorial',
+    sourceLabel:'BookGuide detailed content guide',
+    confidence:'Multi-source detailed content guide',
+    aliases:["Enders Game"],
+    sources:[
+      {name:'Common Sense Media — book guide',url:'https://www.commonsensemedia.org/book-reviews/enders-game'},
+      {name:'Plugged In — book review',url:'https://www.pluggedin.com/book-reviews/enders-game/'},
+      {name:'Compass Book Ratings — content review',url:'https://www.compassbookratings.com/enders-game/'},
+      {name:'The StoryGraph — community content warnings',url:'https://app.thestorygraph.com/books/0619ad08-c906-48cb-b293-a8051c9da01c/content_warnings'}
+    ]
+  },
+{title:"Harry Potter and the Sorcerer's Stone",author:'J.K. Rowling',aliases:["Harry Potter and the Philosopher's Stone"],age:'8+',categories:{language:2,violence:3,sexual:1,romance:1,substances:2,fear:3,death:3,bullying:3,abuse:4,selfharm:1,hate:1,animal:2},triggers:['Body horror','Bullying','Child abuse','Self-sacrifice','Violence'],sources:[{name:'BookGuide Editorial Baseline',kind:'App-curated starter content profile'}]},
+  {title:'The Hunger Games',author:'Suzanne Collins',age:'13+',categories:{language:2,violence:3,sexual:2,romance:2,substances:2,fear:4,death:4,bullying:1,abuse:3,selfharm:3,hate:3,animal:3},triggers:['Alcoholism','Animal death','Blood','Death','Gore','Murder','Parental abuse','PTSD','Racism','Violence'],sources:[{name:'BookGuide Editorial Baseline',kind:'App-curated starter content profile'}]},
+  {title:'The Lightning Thief',author:'Rick Riordan',age:'9+',categories:{language:1,violence:3,sexual:2,romance:2,substances:2,fear:3,death:3,bullying:1,abuse:1,selfharm:1,hate:1,animal:4},triggers:['Monster violence','Animal neglect/abuse','Death imagery','Torture imagery'],sources:[{name:'BookGuide Editorial Baseline',kind:'App-curated starter content profile'}]},
+  {title:"Charlotte's Web",author:'E.B. White',age:'7+',categories:{language:1,violence:2,sexual:1,romance:1,substances:2,fear:2,death:4,bullying:1,abuse:1,selfharm:1,hate:1,animal:3},triggers:['Animal slaughter threat','Major character death','Grief'],sources:[{name:'BookGuide Editorial Baseline',kind:'App-curated starter content profile'}]},
+  {title:'Holes',author:'Louis Sachar',age:'10+',categories:{language:1,violence:3,sexual:2,romance:2,substances:1,fear:3,death:3,bullying:3,abuse:4,selfharm:1,hate:4,animal:1},triggers:['Child abuse','Racism','Juvenile incarceration','Violence'],sources:[{name:'BookGuide Editorial Baseline',kind:'App-curated starter content profile'}]},
+  {title:'Wonder',author:'R.J. Palacio',age:'10+',categories:{language:3,violence:2,sexual:2,romance:2,substances:2,fear:2,death:2,bullying:4,abuse:1,selfharm:1,hate:3,animal:3},triggers:['Bullying','Hate speech/insults','Disability discrimination','Pet loss'],sources:[{name:'BookGuide Editorial Baseline',kind:'App-curated starter content profile'}]},
+  {title:'To Kill a Mockingbird',author:'Harper Lee',age:'12+',categories:{language:3,violence:3,sexual:3,romance:1,substances:2,fear:3,death:4,bullying:3,abuse:3,selfharm:1,hate:5,animal:1},triggers:['Racism','Racial slurs','Rape accusation','Violence','Death'],sources:[{name:'BookGuide Editorial Baseline',kind:'App-curated starter content profile'}]},
+  {title:'The Hobbit',author:'J.R.R. Tolkien',age:'9+',categories:{language:1,violence:3,sexual:1,romance:1,substances:3,fear:3,death:3,bullying:1,abuse:1,selfharm:1,hate:1,animal:1},triggers:['Fantasy combat','Dragon peril','Tobacco smoking','Death'],sources:[{name:'BookGuide Editorial Baseline',kind:'App-curated starter content profile'}]},
+  {title:'The Giver',author:'Lois Lowry',age:'11+',categories:{language:1,violence:3,sexual:2,romance:2,substances:2,fear:4,death:5,bullying:1,abuse:3,selfharm:1,hate:1,animal:1},triggers:['Death','Eugenics','Filicide','Murder'],sources:[{name:'BookGuide Editorial Baseline',kind:'App-curated starter content profile'}]},
+  {title:'Hatchet',author:'Gary Paulsen',age:'11+',categories:{language:1,violence:3,sexual:2,romance:1,substances:1,fear:4,death:3,bullying:1,abuse:1,selfharm:4,hate:1,animal:4},triggers:['Plane crash','Survival peril','Animal killing','Parental affair'],sources:[{name:'BookGuide Editorial Baseline',kind:'App-curated starter content profile'}]},
+  {title:'Lord of the Flies',author:'William Golding',age:'12+',categories:{language:2,violence:4,sexual:1,romance:1,substances:1,fear:4,death:5,bullying:4,abuse:3,selfharm:1,hate:2,animal:5},triggers:['Murder','Bloody violence','Bullying','Torture','Animal killing'],sources:[{name:'BookGuide Editorial Baseline',kind:'App-curated starter content profile'}]},
+  {title:'1984',author:'George Orwell',age:'16+',categories:{language:2,violence:4,sexual:4,romance:3,substances:3,fear:5,death:4,bullying:1,abuse:5,selfharm:1,hate:3,animal:1},triggers:['Torture','Sexual relationship','War','Execution','Psychological abuse'],sources:[{name:'BookGuide Editorial Baseline',kind:'App-curated starter content profile'}]},
+  {title:'Fahrenheit 451',author:'Ray Bradbury',age:'13+',categories:{language:2,violence:4,sexual:2,romance:2,substances:4,fear:4,death:4,bullying:1,abuse:3,selfharm:5,hate:1,animal:2},triggers:['Self-immolation','Drug overdose','Violence','Death','Censorship'],sources:[{name:'BookGuide Editorial Baseline',kind:'App-curated starter content profile'}]},
+  {title:'Divergent',author:'Veronica Roth',age:'13+',categories:{language:2,violence:3,sexual:2,romance:3,substances:2,fear:4,death:4,bullying:3,abuse:3,selfharm:4,hate:1,animal:1},triggers:['Bloody combat','Suicide','Sexual assault threat','Death'],sources:[{name:'BookGuide Editorial Baseline',kind:'App-curated starter content profile'}]},
+  {title:'The Maze Runner',author:'James Dashner',age:'13+',categories:{language:2,violence:4,sexual:1,romance:1,substances:1,fear:5,death:4,bullying:3,abuse:4,selfharm:1,hate:1,animal:1},triggers:['Graphic violence','Children in peril','Death','Adult abuse/manipulation'],sources:[{name:'BookGuide Editorial Baseline',kind:'App-curated starter content profile'}]},
+  {title:'Diary of a Wimpy Kid',author:'Jeff Kinney',age:'9+',categories:{language:2,violence:2,sexual:1,romance:1,substances:2,fear:1,death:1,bullying:3,abuse:1,selfharm:1,hate:1,animal:1},triggers:['Bullying','Potty humor','Mild fighting','Anti-smoking references'],sources:[{name:'BookGuide Editorial Baseline',kind:'App-curated starter content profile'}]},
+  {title:'The Outsiders',author:'S.E. Hinton',age:'12+',categories:{language:2,violence:4,sexual:1,romance:2,substances:3,fear:3,death:5,bullying:4,abuse:3,selfharm:4,hate:2,animal:1},triggers:['Gang fighting','Fatal stabbing','Underage drinking','Death','Suicidal behavior'],sources:[{name:'BookGuide Editorial Baseline',kind:'App-curated starter content profile'}]}
+];
+const ratingDetails={
+  "ender s game":{
+    age:"The recommendation reflects sustained child-on-child violence, psychological manipulation, genocide, intense peril, and frequent harsh insults/slurs despite the young protagonist.",
+    violence:"Ender is repeatedly attacked by other children. He fights Stilson and later Bonzo with overwhelming force; both boys ultimately die from injuries caused in those confrontations, although Ender is not immediately told. Battle School training includes aggressive zero-gravity combat. In the climax, Ender unknowingly commands a real fleet and destroys the Formic homeworld, wiping out nearly the entire alien species.",
+    language:"Children and adults use repeated profanity, insults, and derogatory ethnic or religious language. The tone can be harsh because bullying and psychological pressure are central to the story.",
+    sexual:"There is little sexual content. There are occasional body/nudity references connected to children living in a military-school setting, but no sexual activity is depicted.",
+    romance:"Romance is essentially absent; relationships are primarily family, friendship, rivalry, and military mentorship.",
+    substances:"Substance use is not a meaningful focus of the story.",
+    fear:"Ender is isolated, manipulated, threatened, and deliberately pushed toward psychological breaking points. The military setting and final revelation can be disturbing even when scenes are not graphically described.",
+    death:"Multiple deaths occur, including children Ender fights and enormous wartime casualties. The final revelation that Ender's 'game' was actually real warfare gives the death content substantial emotional weight.",
+    bullying:"Ender is targeted by organized bullying and physical intimidation, and he also uses calculated violence to stop future attacks. Other children are humiliated, threatened, or socially isolated.",
+    abuse:"Adults knowingly manipulate Ender, monitor him, isolate him from support, and place him under extreme psychological and physical pressure for military purposes.",
+    selfharm:"There is no sustained self-harm theme, but the book includes severe despair, emotional collapse, and behavior that may read as self-destructive under extreme stress.",
+    hate:"Characters use prejudiced insults and slurs, and the war itself depends on portraying an alien species as an existential enemy before the moral complexity is revealed.",
+    animal:"The fantasy-game sequences include disturbing cruelty toward creature-like beings, and the novel contains violent imagery involving animals/alien creatures. This category is secondary to the human and wartime violence."
+  },
+  "harry potter and the sorcerer s stone":{
+    age:"The story is written for middle-grade readers, but it includes child abuse, frightening monsters, a murderous villain, death references, and a tense final confrontation.",
+    violence:"Harry faces a troll, a three-headed dog, magical traps, and dangerous wizarding threats. A giant chess match violently destroys pieces. In the climax, Voldemort possesses/uses Professor Quirrell, Harry is attacked, and physical contact with Harry causes Quirrell severe burning and ultimately death. There are also references to Voldemort murdering Harry's parents.",
+    language:"Mostly mild insults and name-calling; strong profanity is not a major feature.",
+    sexual:"No meaningful sexual content.",
+    romance:"No meaningful romance; a few childish social interactions are present but romance is not part of the plot.",
+    substances:"Adults drink in pub/social settings, and Hagrid can be irresponsible around alcohol, but substance use is not central.",
+    fear:"Monsters, a forbidden forest, Voldemort's return, a hooded figure drinking unicorn blood, and threats against children create several frightening scenes.",
+    death:"Harry's parents' murder is a central backstory. Unicorn death is shown, and Quirrell dies after the final confrontation.",
+    bullying:"Dudley and other children bully Harry; Draco bullies classmates and uses class/status insults.",
+    abuse:"The Dursleys neglect and emotionally abuse Harry, force him to sleep in a cupboard, isolate him, and routinely demean him.",
+    selfharm:"No meaningful self-harm content.",
+    hate:"Prejudice based on magical ancestry/class appears in early form, but explicit protected-class hate content is limited in this volume.",
+    animal:"A unicorn is killed off-page and its blood is consumed by a villain; otherwise animal peril is mostly fantastical."
+  },
+  "the hunger games":{
+    age:"The premise centers on teenagers being forced to kill one another for public entertainment, with repeated death, fear, trauma, and political cruelty.",
+    violence:"Children and teenagers fight to the death using knives, spears, bows, swords, rocks, traps, poison, and physical force. Rue is killed with a spear, tributes die in the opening bloodbath, tracker-jacker attacks cause grotesque swelling and death, and Cato is mauled for hours by engineered creatures before Katniss kills him to end his suffering. Blood and injuries are described, though the prose is not relentlessly graphic.",
+    language:"Occasional mild-to-moderate profanity and insults; language is less intense than the violence.",
+    sexual:"There is kissing and a staged romance for the audience. Some medical/body exposure occurs because injured characters are treated, but explicit sexual activity is absent.",
+    romance:"Katniss and Peeta perform a romantic relationship for survival, with genuine emotional ambiguity and kissing.",
+    substances:"Haymitch is frequently drunk, and alcohol dependence is portrayed as a coping mechanism for trauma.",
+    fear:"Sustained survival fear, being hunted, engineered creatures, hallucinations, and the constant possibility of death make fear intense.",
+    death:"Many young characters die on-page or nearby. Rue's death is emotionally central, and numerous other deaths are announced or witnessed.",
+    bullying:"Traditional school bullying is not a major theme; intimidation comes more from the state, stronger tributes, and the Games structure.",
+    abuse:"The Capitol forcibly removes children from their families, controls their bodies and public personas, and compels them to kill for entertainment.",
+    selfharm:"No sustained self-harm theme, though desperation and threatened double-suicide with poisonous berries are central to the ending.",
+    hate:"The book emphasizes class oppression and dehumanization of poorer districts rather than protected-class hatred.",
+    animal:"Animals and engineered creatures are injured or killed; tracker jackers and wolf-like muttations are part of violent scenes, and hunting is common."
+  },
+  "the lightning thief":{
+    age:"Frequent fantasy danger and monster combat are balanced by humor and a middle-grade tone, but there are death threats, frightening mythological creatures, and family-abuse references.",
+    violence:"Percy fights the Minotaur, Medusa, the Furies, Echidna/Chimera, Ares, and other monsters using swords and supernatural powers. Medusa is beheaded, monsters disintegrate when defeated, and Percy is repeatedly placed in lethal danger. Human injuries are less graphic than the monster action.",
+    language:"Very little strong language; insults and sarcastic banter are more common than profanity.",
+    sexual:"Greek mythology brings occasional adult relationship references, but explicit sexual content is absent.",
+    romance:"Only very light crush/attraction material; romance is not central.",
+    substances:"Some adult drinking references appear, but substance use is not a focus.",
+    fear:"Children are chased by monsters, threatened with death, and travel through the Underworld. The tone is adventurous rather than horror-driven.",
+    death:"Percy believes his mother may be dead for part of the story, and the Underworld contains many images of death and the dead.",
+    bullying:"School teasing and antagonism occur, but sustained bullying is not a major content driver.",
+    abuse:"Percy's stepfather is verbally abusive and threatening; family dysfunction is discussed.",
+    selfharm:"No meaningful self-harm content.",
+    hate:"No major protected-class hate content.",
+    animal:"Percy encounters neglected and abused zoo animals being transported in a truck and helps free them; monster/animal-like creatures are also fought and killed."
+  },
+  "charlotte s web":{
+    age:"The language and plot are gentle, but the story directly confronts slaughter, mortality, and the death of a beloved major character.",
+    violence:"At the beginning, Fern stops her father from killing newborn Wilbur with an axe. Later, Wilbur learns that people intend to slaughter him for meat. The threatened violence is emotionally significant but not graphically depicted.",
+    language:"Very mild language with no notable profanity.",
+    sexual:"No meaningful sexual content.",
+    romance:"No human romance content of concern.",
+    substances:"Very limited adult/social references; substance use is not a meaningful part of the story.",
+    fear:"Wilbur fears being killed, and the possibility of death drives much of the story, but the presentation remains gentle.",
+    death:"Charlotte dies naturally after laying her eggs. Her death and Wilbur's grief are central and may be very sad for younger readers.",
+    bullying:"Some animals speak sharply to one another, but sustained bullying is not a major theme.",
+    abuse:"No meaningful abuse content.",
+    selfharm:"No self-harm content.",
+    hate:"No meaningful discrimination/hate content.",
+    animal:"The story revolves around farm animals, including the threat that Wilbur will be slaughtered and the natural death of Charlotte."
+  },
+  "holes":{
+    age:"The novel mixes humor with juvenile incarceration, racism, child mistreatment, physical danger, and historical murder.",
+    violence:"At Camp Green Lake, boys face fights, threats, dangerous desert conditions, and abusive discipline. Zero strikes Mr. Pendanski with a shovel. In the historical storyline, Sam is murdered because of his interracial relationship with Kate, and Kate later becomes a violent outlaw. Guns, threats, and deadly desert animals also appear.",
+    language:"Generally mild language and insults; strong profanity is limited.",
+    sexual:"A historical interracial romance includes kissing but no explicit sexual activity.",
+    romance:"Sam and Kate's relationship is emotionally important and ends tragically because of racist violence.",
+    substances:"Substance use is not a meaningful focus.",
+    fear:"The boys are threatened by adults, dehydration, poisonous/venomous animals, and punishment in an isolated camp.",
+    death:"Historical characters are murdered, and death from the desert environment is a recurring threat.",
+    bullying:"Campers insult, threaten, and intimidate one another; adults also humiliate the boys.",
+    abuse:"Camp staff exploit and mistreat incarcerated children, forcing dangerous labor and withholding adequate care.",
+    selfharm:"No meaningful self-harm content.",
+    hate:"Racism is a major plot point. An interracial relationship triggers mob violence and murder in the historical storyline.",
+    animal:"Dangerous lizards and other desert animals create peril, but animal cruelty is not a central theme."
+  },
+  "wonder":{
+    age:"Most content is school/social conflict rather than mature material, but persistent bullying, disability-based insults, a physical fight, and pet loss can be emotionally intense.",
+    violence:"Auggie and his friends are confronted by older boys during a school trip, leading to pushing, punching, and a chaotic fight. Violence is brief and not graphic.",
+    language:"Children use insults, rude jokes, and some moderate language. Hurtful words are more important than profanity itself.",
+    sexual:"Very mild middle-school references and joking; no explicit sexual activity.",
+    romance:"Light crushes, dating talk, and early-teen relationship material.",
+    substances:"Occasional adult/social references; substance use is not central.",
+    fear:"Auggie experiences anxiety about school, social rejection, and confrontation; there is no horror content.",
+    death:"The family dog dies, producing a significant grief scene. Other death references are limited.",
+    bullying:"Auggie is repeatedly mocked, excluded, stared at, insulted, and targeted because of his facial difference. This is one of the book's central themes.",
+    abuse:"No sustained caregiver abuse theme.",
+    selfharm:"No meaningful self-harm content.",
+    hate:"Disability-based prejudice, cruel comments, and dehumanizing treatment are frequent enough to be a major content consideration.",
+    animal:"A beloved family dog becomes ill and dies; the scene is emotionally upsetting but not violent."
+  },
+  "to kill a mockingbird":{
+    age:"The book requires maturity for racism, racial slurs, a rape accusation/trial, mob threats, domestic abuse, murder, and historical social context.",
+    violence:"Bob Ewell attacks Scout and Jem at night; Jem is seriously injured and Ewell dies after Boo Radley intervenes. Tom Robinson is shot and killed while trying to escape prison. Atticus shoots a rabid dog. A lynch mob threatens Tom, and other assaults/violent threats are discussed.",
+    language:"Includes repeated racial slurs, insults, and some profanity consistent with the setting. The discriminatory language is more significant than general swearing.",
+    sexual:"A major trial concerns an accusation of rape. Testimony discusses alleged sexual contact and abuse, but there is no explicit consensual sex scene.",
+    romance:"Romance is not a meaningful focus.",
+    substances:"Adults smoke and drink; intoxication is mentioned, but substance use is not the central issue.",
+    fear:"Children face a nighttime attack, mob tension, racism, and community threats. Suspense around Boo Radley is also used early in the novel.",
+    death:"Tom Robinson is killed; Bob Ewell dies; other deaths and threats of lynching are discussed.",
+    bullying:"Children are taunted about Atticus defending Tom, and social cruelty appears frequently.",
+    abuse:"Mayella describes violence in her home, and the story strongly implies ongoing abuse and coercion by her father.",
+    selfharm:"No meaningful self-harm content.",
+    hate:"Racism is central. The novel contains frequent racial slurs, segregation, racist institutions, mob violence, and dehumanizing attitudes toward Black characters.",
+    animal:"A rabid dog is shot to protect the neighborhood; animal harm is otherwise limited."
+  },
+  "the hobbit":{
+    age:"Frequent fantasy battles and peril are presented in an adventurous style, with less graphic detail than many modern fantasy novels.",
+    violence:"Bilbo and the dwarves face trolls, goblins, giant spiders, wolves, elves, and Smaug. Swords, arrows, biting, burning, and large battles occur. Smaug destroys parts of Lake-town, and the Battle of Five Armies results in many deaths, including major characters Thorin, Fili, and Kili.",
+    language:"Very little strong language.",
+    sexual:"No meaningful sexual content.",
+    romance:"No meaningful romance content.",
+    substances:"Pipe smoking, ale, wine, and feasting are common parts of the fantasy setting.",
+    fear:"Dark caves, giant spiders, goblins, imprisonment, dragon attacks, and battle create repeated suspense and peril.",
+    death:"Numerous creatures and combatants die, and several named characters die after the final battle.",
+    bullying:"No major sustained bullying theme.",
+    abuse:"No major abuse theme, though captors threaten and imprison characters.",
+    selfharm:"No self-harm content.",
+    hate:"Fantasy groups distrust and insult one another, but protected-class hate content is not a meaningful focus.",
+    animal:"Animals and fantasy creatures participate in battles; violence toward them is part of the general fantasy combat rather than a cruelty-focused theme."
+  },
+  "the giver":{
+    age:"The prose is accessible, but the moral content is heavy: state-controlled death, infant euthanasia, eugenics, suppressed sexuality, war memories, and loss of individual choice.",
+    violence:"Jonas receives memories of warfare that include wounded and dying people. The most disturbing scene shows his father calmly injecting a smaller twin infant with a lethal substance and disposing of the body as part of the community's 'release' procedure. Other violent memories and threats are described.",
+    language:"Little to no strong profanity.",
+    sexual:"Jonas experiences early sexual feelings called 'Stirrings' and dreams involving attraction; the community requires medication to suppress these feelings. Nothing explicit occurs.",
+    romance:"Early adolescent attraction exists but is controlled by the society and is not a conventional romance plot.",
+    substances:"Daily medication is used to suppress sexuality and regulate citizens; this is institutional drug use rather than recreational substance use.",
+    fear:"The story gradually reveals that apparently gentle social systems include killing, coercion, and control. Jonas's escape also places him and a baby in severe danger.",
+    death:"State-sanctioned euthanasia is a central revelation. The infant twin is killed on-page, and other releases/deaths are discussed.",
+    bullying:"Bullying is not a major theme.",
+    abuse:"The society controls reproduction, family structure, emotions, careers, memory, sexuality, and life/death decisions, creating pervasive institutional coercion.",
+    selfharm:"No meaningful self-harm content.",
+    hate:"Protected-class hatred is not a focus; the society instead eliminates difference through extreme conformity.",
+    animal:"Animals are largely absent from the controlled community; no major animal-harm content."
+  },
+  "hatchet":{
+    age:"The survival story includes a plane crash, a dead pilot, serious injuries, animal attacks, hunting/killing animals for food, and intense isolation.",
+    violence:"Brian survives a plane crash and suffers repeated injuries. He is struck by a porcupine, attacked and thrown by a moose, battered by storms, and faces other survival hazards. Later he sees the dead pilot's body underwater when retrieving supplies from the wrecked plane.",
+    language:"Very little strong language.",
+    sexual:"Brian knows his mother is having an affair; the relationship is referenced but sexual details are not described.",
+    romance:"No meaningful romance involving Brian.",
+    substances:"No meaningful substance-use content.",
+    fear:"Isolation, starvation, storms, wild animals, injury, and the possibility of dying alone create sustained survival fear.",
+    death:"The pilot dies in the crash, and Brian later encounters the corpse. Death from exposure or starvation remains a persistent possibility.",
+    bullying:"No meaningful bullying content.",
+    abuse:"No major abuse theme.",
+    selfharm:"Brian becomes deeply hopeless at one point and makes a serious despair-driven act against himself before deciding to survive; this is brief but important.",
+    hate:"No meaningful discrimination/hate content.",
+    animal:"Brian hunts and kills fish, birds, and small animals for food and is attacked by wildlife. Animal killing is a recurring survival necessity."
+  },
+  "lord of the flies":{
+    age:"The book depicts children descending into cruelty, mob violence, murder, torture, and graphic animal killing, with bleak psychological themes.",
+    violence:"The boys' violence escalates from fights and intimidation to murder. Simon is beaten and killed by a frenzied group. Piggy is struck by a large falling rock and killed. Ralph is hunted with spears and the island is set on fire to flush him out. Physical beatings and threats are frequent.",
+    language:"Insults and some profanity occur, though violence and cruelty are the main mature elements.",
+    sexual:"No meaningful sexual content.",
+    romance:"No romance content.",
+    substances:"No meaningful recreational substance use.",
+    fear:"The boys become terrified of a supposed beast, then increasingly fear one another. Hunting, mob behavior, and the breakdown of safety create intense psychological dread.",
+    death:"Simon and Piggy are murdered. The presumed dead parachutist is discovered, and death becomes increasingly central.",
+    bullying:"Piggy and weaker boys are mocked, humiliated, threatened, and physically abused. Group cruelty becomes systematic.",
+    abuse:"Older/stronger boys terrorize and physically dominate others, including tying up and beating members of rival groups.",
+    selfharm:"No meaningful self-harm content.",
+    hate:"The novel includes dehumanizing group language and some period-era prejudiced phrasing, though the primary conflict is tribal/social rather than protected-class hatred.",
+    animal:"A sow is hunted, stabbed repeatedly, and killed in a deliberately brutal scene; its severed head is mounted on a stick. This is among the book's most graphic passages."
+  },
+  "1984":{
+    age:"The novel contains sustained political terror, torture, sexual material, executions, psychological abuse, and bleak themes about totalitarian control.",
+    violence:"Winston is arrested, beaten repeatedly, starved, humiliated, and tortured by the state. Prisoners are threatened with execution, and political enemies disappear or are killed. Room 101 culminates in a terrifying threat involving rats attacking Winston's face. War deaths and public executions are discussed throughout.",
+    language:"Moderate profanity and crude language appear, but the oppressive subject matter is more significant.",
+    sexual:"Winston and Julia have an ongoing sexual relationship. Their encounters are described more directly than in middle-grade/YA fiction, and sexuality is tied to rebellion against state control.",
+    romance:"Winston and Julia form an intimate romantic/sexual relationship, though the state ultimately destroys their trust and attachment.",
+    substances:"Winston regularly drinks harsh gin and smokes cigarettes; these habits are normalized within the bleak setting.",
+    fear:"Surveillance, arrest, disappearance, betrayal, torture, and thought policing create near-constant dread.",
+    death:"Executions, war casualties, disappeared citizens, and threatened death are frequent. The regime treats human life as disposable.",
+    bullying:"Conventional bullying is not central; abuse comes from institutions and political power.",
+    abuse:"The state uses surveillance, isolation, torture, coercion, gaslighting, forced confession, and psychological conditioning to destroy individual identity.",
+    selfharm:"No sustained self-harm theme, though characters live under extreme despair and coercion.",
+    hate:"Propaganda encourages mass hatred toward designated enemies and targeted groups; dehumanization is a central tool of the regime.",
+    animal:"No major animal-harm theme, though rats are used as an instrument of terror."
+  },
+  "fahrenheit 451":{
+    age:"The book includes suicide/overdose material, immolation, killing with a flamethrower, war destruction, drug use, and intense themes of censorship and alienation.",
+    violence:"A woman deliberately remains inside her house as firefighters burn it and her books, dying in the fire. Montag later kills Captain Beatty with a flamethrower. The Mechanical Hound threatens and injures people, and the city is ultimately destroyed by war. Clarisse's death in a vehicle collision is reported rather than shown.",
+    language:"Some profanity and harsh language, but not constant.",
+    sexual:"Sexual content is limited; marital alienation and adult relationships are discussed without explicit sex scenes.",
+    romance:"Marriage problems and emotional intimacy are themes, but the story is not romance-driven.",
+    substances:"Mildred takes a dangerous overdose of sleeping pills and requires emergency stomach/blood treatment. Pills are part of a numbing, medicated society.",
+    fear:"Police pursuit, censorship, fire, mechanical attack, and social conformity produce sustained tension.",
+    death:"Several deaths occur or are reported, including the woman who burns with her books, Clarisse, Beatty, and mass casualties in war.",
+    bullying:"No major conventional bullying theme.",
+    abuse:"Authorities use censorship, intimidation, surveillance, and lethal force. Emotional neglect within relationships is also prominent.",
+    selfharm:"Mildred's overdose is treated as a likely suicide attempt or dangerously self-destructive act, even though she later denies/forgets it. The woman who chooses to die with her books also deliberately remains in a burning house.",
+    hate:"No major protected-class hate theme.",
+    animal:"The Mechanical Hound is machine-like rather than an animal; animal harm is not a major theme."
+  },
+  "divergent":{
+    age:"The initiation system includes repeated beatings, weapon training, death, suicide, sexual-assault fear simulation, coercion, and violent political conflict.",
+    violence:"Initiates punch and beat one another during training, throw knives near each other, and face deliberate physical punishment. Later, mind-controlled soldiers use guns against civilians. Tris shoots and kills Will while he is under simulation control. Her parents are killed during the uprising, and multiple other characters die violently.",
+    language:"Some profanity and insults, generally moderate for YA.",
+    sexual:"Romantic physical contact is present. One fear simulation specifically involves the threat of sexual assault, though an assault is not actually completed.",
+    romance:"Tris and Four develop a substantial romantic relationship with kissing and physical intimacy short of explicit sex.",
+    substances:"Serums and injected drugs are used for testing, simulations, and mind control; recreational drug use is not a major theme.",
+    fear:"Fear simulations force characters to experience drowning, confinement, attack, sexual threat, and other personalized terrors.",
+    death:"Several named characters die, including through suicide, gunfire, and political violence.",
+    bullying:"Initiation involves humiliation, intimidation, hazing, and targeted cruelty toward weaker recruits.",
+    abuse:"Authority figures use harsh initiation practices, coercion, surveillance, and chemical control. Family/community structures also pressure characters intensely.",
+    selfharm:"Al dies by suicide after severe emotional distress. Other scenes include despair and life-threatening risk-taking.",
+    hate:"Faction prejudice and social exclusion are central, but protected-class hate speech is not a major feature.",
+    animal:"No major animal-harm content."
+  },
+  "the maze runner":{
+    age:"The book sustains intense horror-like peril, violent creature attacks, youth deaths, bullying, confinement, and manipulation by adults.",
+    violence:"Grievers attack teenagers with blades, needles, and mechanical appendages, causing severe wounds and painful transformations. Ben is forcibly banished into the Maze. During the final escape, several boys are killed. Chuck is fatally stabbed when he jumps in front of a knife meant for Thomas. Fights and threats among the boys also occur.",
+    language:"Some mild-to-moderate invented slang/profanity and insults.",
+    sexual:"No meaningful sexual content.",
+    romance:"Only minimal attraction; romance is not a main focus in this volume.",
+    substances:"No meaningful recreational substance use.",
+    fear:"The Maze, Grievers, memory loss, confinement, nighttime attacks, and uncertainty about the adults controlling the experiment create very intense fear.",
+    death:"Teenagers die from attacks and during escape attempts; Chuck's death is particularly emotional.",
+    bullying:"Newcomers are threatened, mocked, and sometimes physically intimidated. Group hierarchy can be harsh.",
+    abuse:"Children are imprisoned in a lethal experiment, deprived of memories, manipulated, and knowingly exposed to deadly conditions by adults.",
+    selfharm:"No sustained self-harm theme.",
+    hate:"No major protected-class hate content.",
+    animal:"The Grievers are artificial monster-like creatures rather than ordinary animals; animal cruelty is not a central theme."
+  },
+  "diary of a wimpy kid":{
+    age:"Most mature content is comic school conflict: bullying, rude humor, minor fighting, and irresponsible behavior rather than serious violence.",
+    violence:"There are slapstick scuffles, threats from older kids, wrestling, throwing objects, and accidents. Rowley breaks his arm in a bike-related accident connected to Greg's behavior. The violence is generally comedic and non-graphic.",
+    language:"Mild insults, rude expressions, and schoolyard language; strong profanity is not a feature.",
+    sexual:"No meaningful sexual content; some childish embarrassment about bodies/crushes may appear.",
+    romance:"Very light school crush material.",
+    substances:"Smoking is referenced negatively/comedically; substance use is not portrayed as desirable or central.",
+    fear:"Some Halloween scares and social embarrassment, but no sustained frightening content.",
+    death:"No meaningful death content.",
+    bullying:"Bullying, teasing, social exclusion, pranks, and humiliation are frequent school-life themes.",
+    abuse:"No major abuse theme.",
+    selfharm:"No self-harm content.",
+    hate:"No meaningful protected-class hate content.",
+    animal:"No significant animal-harm content."
+  },
+  "the outsiders":{
+    age:"Gang violence, a fatal stabbing, child abuse, underage smoking/drinking, multiple deaths, and suicidal behavior make the story emotionally mature despite its accessible prose.",
+    violence:"Ponyboy is attacked and nearly drowned by rival gang members. Johnny stabs and kills Bob while defending Ponyboy. The gangs later have a large physical rumble. Johnny and Ponyboy are badly injured in a church fire, and Dally is shot and killed by police after pointing an unloaded gun at them.",
+    language:"Some profanity, insults, and rough gang language.",
+    sexual:"Very little sexual content; dating and attraction are present without explicit sexual activity.",
+    romance:"Teen dating and attraction are present, especially around Cherry and the gang dynamics, but romance is secondary.",
+    substances:"Teenagers smoke cigarettes frequently; alcohol use and drunkenness also appear, including among minors.",
+    fear:"Gang attacks, police pursuit, fire, serious injury, and grief create repeated tension.",
+    death:"Bob is stabbed to death, Johnny dies from burn injuries, and Dally is deliberately reckless and is killed by police. These deaths drive the emotional core of the ending.",
+    bullying:"Gang intimidation, class-based humiliation, threats, and repeated harassment are common.",
+    abuse:"Johnny is physically abused and neglected at home, and several teens lack stable adult protection.",
+    selfharm:"After Johnny dies, Dally behaves in an intentionally suicidal way and confronts police with an unloaded gun, resulting in his death. The scene strongly reads as suicide-by-police.",
+    hate:"Hostility is largely class/gang-based (Socs vs. Greasers) rather than protected-class hatred, though dehumanizing insults are common.",
+    animal:"No meaningful animal-harm content."
+  }
+};
+const richGuideDetails={
+  "ender s game":{
+    language:{frequency:'Repeated',intensity:'Strong',context:'Mostly child dialogue, insults, military-school banter and prejudice rather than adult sexual dialogue.',includes:['Repeated profanity and crude insults','Scatological and sexual-anatomy insults','Racial and ethnic slurs','Antisemitic slurs/references','“Third” used as a demeaning label'],why:'The concern is rated Strong because offensive language is recurrent and includes explicit discriminatory slurs, not merely occasional mild swearing.'},
+    violence:{frequency:'Frequent',intensity:'Strong',graphic:'Moderate',context:'Violence involves children, training combat, fatal fights and large-scale wartime destruction.',includes:['Child-on-child assaults','Two child deaths caused by fight injuries','Broken arm during a confrontation','Physical sibling abuse and death threats','Zero-gravity military combat','Human combat deaths and destruction of the Formic homeworld'],events:['Ender knocks Stilson down and continues kicking him to make future attacks less likely; he later learns Stilson died from the injuries.','During the trip to Battle School, Ender throws a boy who has been striking him; the boy’s arm is broken.','Peter physically intimidates Ender and Valentine and threatens to kill them.','Bonzo corners Ender in the shower with other boys. Ender fights back; Bonzo later dies from the head injury.','The mind-game contains violent, grotesque symbolic deaths and mutilation imagery.','At Command School, Ender believes he is playing simulations, but the battles are real. Human pilots die under his command, and the final attack destroys the Formic homeworld and nearly the entire species.'],why:'Strong rather than Extreme: severe and fatal violence is central to the story and sometimes described in concrete physical terms, but the novel is not dominated by prolonged graphic gore.'},
+    sexual:{frequency:'Brief',intensity:'Mild',graphic:'Low',context:'Mostly nonsexual nudity or anatomy in a communal child-military setting; no conventional human sex scene.',includes:['Matter-of-fact dormitory nudity','A brief animated penis image','Brief alien reproductive/mating imagery'],events:['Children at Battle School are sometimes described as naked in the dormitory/shower environment without erotic framing.','One student displays an animated penis image on his desk while naked.','Later Formic reproductive imagery briefly describes males mating with a larval queen, experiencing ecstasy, and dying afterward.'],why:'Mild because these moments are limited, brief and not presented as an erotic human relationship or explicit sex scene.'},
+    romance:{frequency:'Minimal',intensity:'None to Mild',context:'Friendship, sibling bonds, rivalry and mentorship dominate the relationships.',includes:['No central romance','No sustained dating plot','No human sexual relationship'],why:'Romance is essentially absent; Petra and Ender have an important friendship, but the book does not develop it as a romantic relationship.'},
+    substances:{frequency:'Minimal',intensity:'None to Mild',context:'Military and medical settings appear, but recreational substance use is not a meaningful theme.',includes:['No recurring alcohol use','No recurring recreational drug use','No meaningful smoking theme'],why:'This category remains low because the established content guides do not identify recreational substance use as a material concern.'},
+    fear:{frequency:'Repeated',intensity:'Strong',context:'Threats come from family abuse, peer attacks, grotesque game imagery, institutional pressure and the final deception.',includes:['Death threats from Peter','Animal torture knowledge','Grotesque mind-game imagery','Isolation and deliberate adult nonintervention','Potentially lethal peer attacks','Psychological collapse and genocide revelation'],events:['Peter threatens to kill Ender and Valentine and uses physical intimidation.','Ender’s fantasy/mind game repeatedly presents disturbing death, mutilation and decay imagery.','Adults intentionally isolate Ender and sometimes allow dangerous situations to develop so he believes no adult will rescue him.','The final revelation that the “simulations” were real forces Ender to realize he unknowingly directed an actual war and mass killing.'],why:'Strong because frightening material is sustained across interpersonal, surreal and psychological forms, even when the prose is not horror-focused.'},
+    death:{frequency:'Repeated',intensity:'Strong',context:'Includes individual child deaths, a suicide reference, military casualties and near-species-level destruction.',includes:['Stilson’s death','Bonzo’s death','Past student suicide','Human military casualties','Formic mass death/genocide'],events:['Stilson later dies from injuries Ender inflicted.','Bonzo later dies from injuries from the shower fight.','Adults discuss former Battle School student Pinual, who died by suicide.','Real human pilots die in engagements Ender believes are simulated.','The final attack destroys the Formic homeworld and almost the entire species.'],why:'Strong because death is both personally consequential and enormous in scale, and the revelation of responsibility is central to Ender’s emotional collapse.'},
+    bullying:{frequency:'Frequent',intensity:'Strong',context:'Peer intimidation is woven through Ender’s childhood and Battle School experience.',includes:['“Third” harassment','Group assault/intimidation','Launch harassment','Status exclusion','Bonzo’s hostility and physical aggression','Adults permitting peer pressure to escalate'],events:['Stilson and his group surround Ender after school.','Other children mock Ender for being a legally unusual third child.','Bonzo refuses to properly support/train Ender, slaps him, and later participates in a planned confrontation that becomes lethal.'],why:'Strong because harassment is recurring, escalates to physical danger and is sometimes deliberately left unresolved by adults as part of Ender’s training.'},
+    abuse:{frequency:'Repeated',intensity:'Strong',context:'Both family abuse and institutional psychological manipulation are important to the plot.',includes:['Sibling physical/emotional abuse','Death threats','Deliberate isolation','Withheld communication','Emotional manipulation using Valentine','Adult nonintervention in danger','Deception about real combat'],events:['Peter terrorizes Ender and Valentine physically and emotionally.','Graff and the military deliberately isolate Ender and accelerate stressful challenges.','Earlier messages from Valentine are withheld; a later letter is used to influence Ender’s emotional state.','The adults allow Ender to believe final Command School battles are simulations even though he is commanding real forces.'],why:'Strong because manipulation is systematic, sustained and conducted by trusted adults who knowingly impose extreme psychological pressure on children.'},
+    selfharm:{frequency:'Limited but significant',intensity:'Mild to Moderate',context:'The concern is primarily a past student suicide and adults’ fear that Ender may be following a similar psychological pattern.',includes:['Reference to student suicide','Severe psychological exhaustion/despair','Adult concern about Ender’s obsessive behavior'],events:['Battle School adults discuss Pinual, a former student who died by suicide after becoming trapped psychologically in the Giant’s Drink game.','They become concerned when Ender shows similar obsessive behavior in the same game while under severe pressure.'],why:'The category is not high because Ender is not repeatedly shown intentionally injuring himself, but the suicide reference and psychological parallels are concrete enough that the concern should not be described as nonexistent.'},
+    hate:{frequency:'Repeated',intensity:'Strong',context:'Includes human racial/ethnic prejudice as well as species-level dehumanization of the Formics.',includes:['Racial slurs','Antisemitic slurs/references','Derogatory ethnic language','Gender stereotypes','Xenophobic/dehumanizing language about Formics','Genocide as a central ethical issue'],events:['Children use explicit racial and ethnic insults in dialogue.','Girls’ suitability for Battle School is discussed through gender stereotypes.','Human society largely treats the Formics as an enemy species that must be exterminated; the ending reveals that communication and coexistence may have been possible.'],why:'Strong because discriminatory language appears directly and the novel’s largest moral conflict centers on dehumanization and extermination of an entire species.'},
+    animal:{frequency:'Limited scenes, high intensity',intensity:'Strong',graphic:'Moderate to Strong',context:'The main concern is Peter’s deliberate cruelty to small animals.',includes:['Animal torture','Killing of squirrels/small animals','Skinning/mutilation imagery'],events:['Valentine learns that Peter captures small animals, particularly squirrels, restrains them, skins them and watches them die; she encounters evidence of the mutilated animals.'],why:'Strong because the cruelty is deliberate, sadistic and described specifically enough to be disturbing even though it is not a constant feature of the novel.'}
+  }
+};
+function detailKey(title){return String(title||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').trim()}
+function findEstablishedProfile(b){
+  if(!b)return null;
+  const nt=normalizeText(b.title),na=normalizeText(b.author);
+  return establishedRatings.find(r=>{
+    const titles=[r.title,...(r.aliases||[])].map(normalizeText);
+    const authorOk=!r.author||!na||tokenCoverage(r.author,b.author)>=.6||tokenCoverage(b.author,r.author)>=.6;
+    return titles.includes(nt)&&authorOk;
+  })||null;
+}
+function genericDetail(category,score){
+  const level=score?scaleLabels[Math.max(0,Math.min(4,Math.round(score)-1))]:'No data';
+  if(!score)return 'Why don’t you tell us what you noticed? This category does not yet have enough verified scene-level detail for a BookGuide explanation.';
+  if(score<=1)return 'No meaningful content in this category was identified as a significant part of the book.';
+  return `Why don’t you tell us what you noticed? BookGuide has a ${level.toLowerCase()} concern signal for this category, but the current evidence does not yet support a more specific scene-by-scene explanation.`;
+}
+function resolvedGuideDetails(r){
+  const v16=ratingDetails[detailKey(r.title)]||{},own=r.details||{};
+  // For established BookGuide profiles, the original v1.6 scene-specific dataset is
+  // authoritative and newer fields may only fill gaps. For rights-holder full-text
+  // analyses, manuscript-derived details take priority.
+  return (r.profileType==='rights'||r.wordCount)?{...v16,...own}:{...own,...v16};
+}
+function contentDetailText(r,k){const d=resolvedGuideDetails(r);return d[k]||genericDetail(k,r.categories?.[k]||0)}
+function hasSpecificDetail(r,k){const d=resolvedGuideDetails(r);return !!(d&&d[k])}
+function renderMetric(label,value){return value?`<div class="detail-metric"><small>${esc(label)}</small><strong>${esc(value)}</strong></div>`:''}
+function renderRichCategory(r,k,label,v,level,isRights){
+  const key=detailKey(r.title),rich=richGuideDetails[key]?.[k],specific=hasSpecificDetail(r,k),meta=r.analysisMeta?.[k];
+  const v16Text=contentDetailText(r,k);
+  // IMPORTANT: the v1.6 book-specific prose is the primary answer. Newer structured
+  // metrics are supplemental and must never replace the concrete plot description.
+  const primary=specific?`<div class="v16-primary-detail"><div class="detail-subhead">What actually happens</div><p>${esc(v16Text)}</p></div>`:'';
+  if(rich){
+    const metrics=`<div class="detail-subhead">Additional context</div><div class="detail-metrics">${renderMetric('Severity',`${v}/5 ${level}`)}${renderMetric('Frequency',rich.frequency)}${renderMetric('Intensity',rich.intensity)}${renderMetric('Graphic detail',rich.graphic)}${renderMetric('Context',rich.context)}</div>`;
+    const tags=rich.includes?.length?`<div class="detail-subhead">Specific concerns</div><div class="concern-tags">${rich.includes.map(x=>`<span>${esc(x)}</span>`).join('')}</div>`:'';
+    const events=rich.events?.length?`<div class="detail-subhead">Additional scene-level detail</div><ul class="detail-list">${rich.events.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:'';
+    const why=rich.why?`<div class="score-rationale"><strong>Why this score:</strong> ${esc(rich.why)}</div>`:'';
+    return `${primary}${metrics}${tags}${events}${why}`;
+  }
+  if(isRights&&meta){
+    const metrics=`<div class="detail-metrics">${renderMetric('Severity',`${v}/5 ${level}`)}${renderMetric('Frequency',meta.frequency)}${renderMetric('Detected references',String(meta.references||0))}${renderMetric('Strongest signal',meta.strongest||'')}</div>`;
+    const tags=meta.signals?.length?`<div class="detail-subhead">Detected content</div><div class="concern-tags">${meta.signals.slice(0,6).map(x=>`<span>${esc(x.label)} • ${x.count}</span>`).join('')}</div>`:'';
+    return `${primary||`<div class="detail-subhead">Screening explanation</div><p>${esc(v16Text)}</p>`}${metrics}${tags}<div class="score-rationale"><strong>Why this score:</strong> ${esc(meta.rationale||'The score reflects the strength and frequency of the detected full-text indicators. This local screening does not infer scene context beyond the text patterns it can support.')}</div>`;
+  }
+  return `${primary||`<p>${esc(v16Text)}</p>`}${!specific&&!isRights?`<button class="btn secondary small" style="margin-top:10px" onclick="startRating()">Tell us what you noticed</button>`:''}`;
+}
+function renderContentExplanations(r){
+  const isRights=!!r.wordCount||r.profileType==='rights';
+  const d=resolvedGuideDetails(r);
+  const heading=isRights?'Full-text concern breakdown':'What actually happens';
+  const sub=isRights?'Severity, frequency and detected content from the submitted manuscript.':'The concrete, spoiler-forward book-specific descriptions from the v1.6 guide are shown first. Structured metrics and newer context are supplemental.';
+  return `<section class="content-explanations"><div class="section-head" style="margin:0"><div><h2>${esc(heading)}</h2><p class="small muted">${esc(sub)}</p></div><span class="evidence-badge">Spoilers</span></div><div class="spoiler-note"><strong>⚠ Detailed content spoilers:</strong> This section is intentionally specific so a parent can decide whether the content is appropriate for their child. Violence is opened by default.</div>${d.age?`<div class="age-rationale"><strong>Why age ${esc(r.age)}:</strong> ${esc(d.age)}</div>`:''}${categories.map(([k,label])=>{const v=r.categories?.[k]||0;const level=v?scaleLabels[Math.max(0,Math.min(4,Math.round(v)-1))]:'No data';return `<details class="content-detail" ${k==='violence'?'open':''}><summary><span>${esc(label)}</span><span class="detail-rating"><span class="severity-pill">${v||'—'}/5 ${esc(level)}</span></span></summary><div class="content-detail-body">${renderRichCategory(r,k,label,v,level,isRights)}</div></details>`}).join('')}</section>`
+}
+
+let route='search',searchResults=[],selectedBook=null,lastQuery='',searchNotice='',searchBusy=false,searchProgress='',catalogsChecked=[],searchMode='book',authorBrowseName='';
+const state=JSON.parse(localStorage.getItem('bcgState')||'null')||{saved:[],ratings:{},avoid:[],adultMode:false,theme:'parchment',customBooks:[],rightsProfiles:{}};
+if(!Array.isArray(state.customBooks))state.customBooks=[];if(!state.rightsProfiles||typeof state.rightsProfiles!=='object')state.rightsProfiles={};if(typeof state.googleBooksKey!=='string')state.googleBooksKey='';
+// Parent ratings may include observations:{category:{frequency,detail,where,tags[]}}. No free-text fields are accepted.
+if(!state.theme||!themes[state.theme])state.theme='parchment';
+// Strip remote cover URLs saved by earlier builds so opening this local file never causes an automatic network request.
+state.saved=(state.saved||[]).map(b=>({...b,cover:''}));
+function save(){localStorage.setItem('bcgState',JSON.stringify(state))}
+function applyTheme(){const t=themes[state.theme]||themes.parchment;Object.entries(t.vars).forEach(([k,v])=>document.documentElement.style.setProperty('--'+k,v));const meta=document.querySelector('meta[name=\"theme-color\"]');if(meta)meta.setAttribute('content',t.vars.bg)}
+function setTheme(id){if(!themes[id])return;state.theme=id;save();applyTheme();render()}
+function esc(s=''){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+// Family-safe display filter. It masks strong profanity, explicit vulgar slang, and common slurs
+// in visible app text without altering the underlying bibliographic value used for search/ISBN matching.
+const unsafeDisplayPatterns=[
+  /\b(?:f+u+c+k+|f\*+k|motherf+u+c+k+er)\w*\b/gi,
+  /\b(?:c+u+n+t|c\*+t)\w*\b/gi,
+  /\b(?:s+h+i+t|bulls+h+i+t)\w*\b/gi,
+  /\b(?:a+s+s+h+o+l+e|d+i+c+k+h+e+a+d)\w*\b/gi,
+  /\b(?:b+i+t+c+h)\w*\b/gi,
+  /\b(?:c+o+c+k+s+u+c+k+e+r)\w*\b/gi,
+  /\b(?:p+u+s+s+y)\w*\b/gi,
+  /\b(?:w+h+o+r+e|s+l+u+t)\w*\b/gi,
+  /\b(?:n[i1]gg(?:er|a)|k[i1]ke|sp[i1]c|ch[i1]nk|f[a@]gg(?:ot)?|tr[a@]nny)\b/gi
+];
+function safeDisplayText(value){
+  let text=String(value??'');
+  for(const re of unsafeDisplayPatterns)text=text.replace(re,m=>m.length<=2?'••':'•'.repeat(Math.min(8,m.length)));
+  return text;
+}
+function applySafetyFilter(root=document.body){
+  if(!root)return;
+  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+  const nodes=[];let n;
+  while((n=walker.nextNode())){
+    const p=n.parentElement;if(!p||/^(SCRIPT|STYLE|NOSCRIPT|TEXTAREA|OPTION)$/.test(p.tagName))continue;
+    nodes.push(n);
+  }
+  for(const node of nodes){const filtered=safeDisplayText(node.nodeValue);if(filtered!==node.nodeValue)node.nodeValue=filtered}
+}
+let safetyFilterBusy=false;
+const safetyObserver=new MutationObserver(()=>{
+  if(safetyFilterBusy)return;safetyFilterBusy=true;
+  queueMicrotask(()=>{try{applySafetyFilter(document.body)}finally{safetyFilterBusy=false}});
+});
+safetyObserver.observe(document.body,{childList:true,subtree:true,characterData:true});
+function cleanImg(url){return url?url.replace('http://','https://'):''}
+function makeId(book){return book.isbn||(`${book.title}|${book.author}`).toLowerCase()}
+function activeNav(){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.route===route))}
+function go(r){route=r;selectedBook=null;render();window.scrollTo({top:0,behavior:'smooth'})}
+document.querySelectorAll('.nav-btn').forEach(b=>b.onclick=()=>go(b.dataset.route));
+function render(){applyTheme();activeNav();const app=document.getElementById('app');if(selectedBook){app.innerHTML=renderDetail(selectedBook);return}app.innerHTML=route==='search'?renderSearch():route==='saved'?renderSaved():route==='rate'?renderRateHub():renderSettings()}
+function renderSearch(){
+  const resultMarkup=searchResults.length
+    ?(searchMode==='author'?renderAuthorSeriesResults():`<div class="section-head"><h2>Best matches</h2><span class="small muted">${searchResults.length} result${searchResults.length===1?'':'s'}</span></div><div class="result-grid">${searchResults.map(bookCard).join('')}</div>`)
+    :(!searchBusy?`<div class="section-head"><h2>Built for quick decisions</h2></div><div class="result-grid"><section class="panel"><strong>🔢 ISBN first</strong><p class="small muted">Use the ISBN on the copyright page or barcode for the most exact edition match.</p></section><section class="panel"><strong>📚 Author / series browse</strong><p class="small muted">Know the author but not the exact title? Browse their books and series as a secondary discovery path.</p></section><section class="panel"><strong>🔎 Title fallback</strong><p class="small muted">Title searches remain available, but BookGuide treats them as less exact than ISBN matching.</p></section></div>`:'');
+  return `<div class="stack">
+    <section class="hero"><div class="eyebrow">Book content ratings for parents</div><h2>ISBN first. Then author. Title when you need it.</h2><p>BookGuide is designed around exact edition identity. Enter the ISBN whenever you have the physical book; author browsing is the next-best path for finding a series, while title search remains a fallback.</p></section>
+    <section class="search-card">
+      <div class="search-row"><input id="bookQuery" value="${esc(lastQuery)}" placeholder="ISBN-10/13 (recommended), author, or title" inputmode="search" autocomplete="off" ${searchBusy?'disabled':''} onkeydown="if(event.key==='Enter'){event.preventDefault();searchBooks()}"><button class="btn" ${searchBusy?'disabled':''} onclick="searchBooks()">${searchBusy?'Searching…':'Search'}</button></div>
+      <div class="search-priority"><div class="priority-card primary"><strong>1 • ISBN</strong><span>Most exact. Matches the edition in your hand.</span></div><div class="priority-card"><strong>2 • Author / series</strong><span>Browse an author's works and group known series.</span></div><div class="priority-card"><strong>3 • Title</strong><span>Useful fallback, but less precise across editions.</span></div></div>
+      <button class="btn secondary author-browse-btn" ${searchBusy?'disabled':''} onclick="browseAuthorSeries()">Browse this author / series</button>
+      <div class="unified-search-note"><strong>Behind the scenes:</strong> ISBN lookups are checked across the available public book catalogs in sequence and merged into one edition record. Content ratings remain separate from book discovery.</div>
+      <div class="add-book-row"><button class="btn secondary" onclick="openAddBook()">＋ Add a missing book</button><button class="btn ghost" onclick="openClaimFromSearch()">✍️ Author / publisher</button></div>
+    </section>
+    ${searchBusy?`<section class="search-status"><span class="search-spinner"></span><div><strong>${esc(searchProgress||'Searching book catalogs…')}</strong><div class="small muted">${searchMode==='author'?'Building an author shelf and series groups.':'Matching the book itself — not filtering for books that already have ratings.'}</div></div></section>`:''}
+    ${!searchBusy&&searchNotice?`<section class="panel"><strong>ℹ️ ${esc(searchNotice)}</strong></section>`:''}
+    ${resultMarkup}
+  </div>`
+}
+function renderAuthorSeriesResults(){
+  if(!searchResults.length)return '';
+  const groups=new Map();
+  searchResults.forEach((b,i)=>{const names=seriesArray(b.series);const key=names[0]||`Other books by ${authorBrowseName||b.author||'this author'}`;if(!groups.has(key))groups.set(key,[]);groups.get(key).push({b,i})});
+  const ordered=[...groups.entries()].sort((a,b)=>{const ao=a[0].startsWith('Other books by'),bo=b[0].startsWith('Other books by');if(ao!==bo)return ao?1:-1;return a[0].localeCompare(b[0])});
+  return `<div class="section-head"><h2>${esc(authorBrowseName||'Author')} — books & series</h2><span class="small muted">${searchResults.length} work${searchResults.length===1?'':'s'}</span></div><div class="series-group">${ordered.map(([name,items])=>`<section class="series-block"><div class="series-header"><h3>${esc(name)}</h3><span>${items.length} title${items.length===1?'':'s'}</span></div><div class="result-grid">${items.map(({b,i})=>bookCard(b,i)).join('')}</div></section>`).join('')}</div>`
+}
+function normalizeISBN(value){return String(value||'').toUpperCase().replace(/[^0-9X]/g,'')}
+function isISBNLike(value){const n=normalizeISBN(value);return (n.length===10||n.length===13)&&/^[0-9]{9}[0-9X]$|^[0-9]{13}$/.test(n)}
+function validISBN(value){
+  const n=normalizeISBN(value);
+  if(n.length===13){
+    let sum=0;for(let i=0;i<13;i++)sum+=(+n[i])*(i%2?3:1);
+    return sum%10===0;
+  }
+  if(n.length===10){
+    let sum=0;for(let i=0;i<10;i++){const v=(i===9&&n[i]==='X')?10:+n[i];sum+=v*(10-i)}
+    return sum%11===0;
+  }
+  return false;
+}
+function jsonpRequest(url,timeout=12000){
+  return new Promise((resolve,reject)=>{
+    const cb='bookGuideCb_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+    const script=document.createElement('script');
+    let timer;
+    const cleanup=()=>{clearTimeout(timer);try{delete window[cb]}catch(e){window[cb]=undefined}script.remove()};
+    window[cb]=(data)=>{cleanup();resolve(data)};
+    script.onerror=()=>{cleanup();reject(new Error('Catalog request was blocked'))};
+    const join=url.includes('?')?'&':'?';
+    script.src=url+join+'callback='+encodeURIComponent(cb);
+    script.async=true;
+    document.head.appendChild(script);
+    timer=setTimeout(()=>{cleanup();reject(new Error('Catalog request timed out'))},timeout);
+  });
+}
+function normalizeText(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[’']/g,'').replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').trim()}
+const searchStopWords=new Set(['the','a','an','by','book','novel','of','and']);
+function tokens(v){return normalizeText(v).split(/\s+/).filter(x=>x&&!searchStopWords.has(x))}
+function titleAuthorParts(q){const m=String(q||'').match(/^(.+?)\s+by\s+(.+)$/i);return m?{title:m[1].trim(),author:m[2].trim()}:null}
+function tokenCoverage(need,have){const n=tokens(need),h=new Set(tokens(have));return n.length?n.filter(x=>h.has(x)).length/n.length:0}
+function canonicalLocalMatch(q){
+  const nq=normalizeText(q),parts=titleAuthorParts(q),pool=[...builtInBooks,...state.customBooks];
+  if(parts){
+    const pt=normalizeText(parts.title),pa=normalizeText(parts.author);
+    return pool.find(b=>{const names=[normalizeText(b.title),...(b.aliases||[]).map(normalizeText)];return names.includes(pt)&&tokenCoverage(pa,b.author)>=.6})||null;
+  }
+  const exact=pool.find(b=>[normalizeText(b.title),...(b.aliases||[]).map(normalizeText)].includes(nq));
+  if(exact)return exact;
+  return pool.find(b=>{const nt=normalizeText(b.title),na=normalizeText(b.author);return nt&&nq.includes(nt)&&tokenCoverage(na,q)>=.66})||null;
+}
+function searchIntent(q){
+  const parts=titleAuthorParts(q),seed=canonicalLocalMatch(q);
+  if(parts)return {kind:'titleAuthor',title:parts.title,author:parts.author,seed};
+  if(seed)return {kind:'titleAuthor',title:seed.title,author:seed.author,seed};
+  return {kind:'general',title:String(q||'').trim(),author:'',seed:null};
+}
+function derivativePenalty(bookTitle,queryTitle){
+  const candidate=normalizeText(bookTitle),query=normalizeText(queryTitle);
+  const flags=['study guide','summary','workbook','companion','analysis','lesson plan','teacher guide','teachers guide','reader guide','readers guide','trivia','quiz','journal','critical essays','sparknotes','cliffsnotes','screenplay','movie guide','unauthorized guide','graphic novel','collection','anthology','boxed set','box set','omnibus','essay collection','curriculum guide'];
+  return flags.some(x=>candidate.includes(x)&&!query.includes(x))?140:0;
+}
+function matchScoreForIntent(book,intent,q){
+  const nt=normalizeText(book.title),na=normalizeText(book.author),qt=normalizeText(intent.title||q),qa=normalizeText(intent.author||'');
+  const aliases=(book.aliases||[]).map(normalizeText),titleExact=nt===qt||aliases.includes(qt),titleStarts=nt.startsWith(qt+' ');
+  const qTokens=tokens(qt),tTokens=tokens(book.title),titleCoverage=tokenCoverage(qt,book.title),reverseCoverage=tokenCoverage(book.title,qt);
+  const extra=Math.max(0,tTokens.length-qTokens.length),authorCoverage=qa?tokenCoverage(qa,book.author):0,authorExact=qa&&na===qa;
+  let score=0;
+  if(titleExact)score=320;
+  else if(titleCoverage===1&&qTokens.length)score=(titleStarts?235:145)-Math.min(titleStarts?90:55,extra*18);
+  else if(titleCoverage>=.8&&reverseCoverage>=.55)score=175;
+  else if(titleCoverage>=.66&&qTokens.length>=3)score=125;
+  if(qa&&score===0)return 0;
+  if(qa){score+=authorExact?125:Math.round(authorCoverage*95);if(authorCoverage<.34)score-=110;}
+  else{
+    const nq=normalizeText(q);
+    if(na===nq)score=Math.max(score,250);
+    else if(tokenCoverage(q,book.author)===1&&tokens(q).length>=2)score=Math.max(score,205);
+  }
+  score-=derivativePenalty(book.title,qt);
+  if(!book.author||normalizeText(book.author)==='unknown author')score-=20;
+  return Math.max(0,score);
+}
+function seedScore(book,q){return matchScoreForIntent(book,searchIntent(q),q)}
+function searchBuiltIn(q){const intent=searchIntent(q);return [...builtInBooks,...state.customBooks].map(b=>({b,score:matchScoreForIntent(b,intent,q)})).filter(x=>x.score>=100).sort((a,b)=>b.score-a.score).slice(0,12).map(x=>({...x.b}))}
+function googleBook(x){
+  const v=x?.volumeInfo||{},ids=v.industryIdentifiers||[];
+  return {source:'Google Books',sourceId:x?.id||'',title:v.title||'Untitled',subtitle:v.subtitle||'',author:(v.authors||[]).join(', ')||'Unknown author',publisher:v.publisher||'',year:(v.publishedDate||'').slice(0,4),publishedDate:v.publishedDate||'',description:v.description||'',cover:'',isbn:(ids.find(i=>i.type==='ISBN_13')||ids.find(i=>i.type==='ISBN_10')||{}).identifier||'',subjects:v.categories||[],pageCount:v.pageCount||'',language:v.language||'',printType:v.printType||'',catalogRating:v.averageRating||0,catalogRatingCount:v.ratingsCount||0,maturity:v.maturityRating||''};
+}
+function openLibraryBook(d){
+  const isbn=(d.isbn||[]).find(x=>String(x).length===13)||(d.isbn||[])[0]||'';
+  const series=Array.isArray(d.series)?d.series:(d.series?[d.series]:[]);
+  return {source:'Open Library',sourceId:d.key||'',workKey:d.key||'',title:d.title||'Untitled',subtitle:d.subtitle||'',author:(d.author_name||[]).join(', ')||'Unknown author',authorKey:(d.author_key||[])[0]||'',publisher:(d.publisher||[])[0]||'',year:String(d.first_publish_year||''),publishedDate:String(d.first_publish_year||''),description:'',cover:d.cover_i?`https://covers.openlibrary.org/b/id/${d.cover_i}-M.jpg`:'',isbn,subjects:(d.subject||[]).slice(0,10),series:series.slice(0,5),pageCount:d.number_of_pages_median||'',language:(d.language||[]).slice(0,3).join(', '),editionCount:d.edition_count||'',catalogRating:d.ratings_average||0,catalogRatingCount:d.ratings_count||0,publicScan:!!d.public_scan_b,iaId:(d.ia||[])[0]||'',ebookAccess:d.ebook_access||''}
+}
+function openLibraryReadBook(data,isbn){
+  const records=Object.entries(data?.records||{});if(!records.length)return null;
+  const [key,record]=records[0],d=record?.data||{};const author=(d.authors||[]).map(a=>typeof a==='string'?a:(a?.name||'')).filter(Boolean).join(', ')||'Unknown author';const publishers=(d.publishers||[]).map(p=>typeof p==='string'?p:(p?.name||'')).filter(Boolean);const subjects=(d.subjects||[]).map(s=>typeof s==='string'?s:(s?.name||'')).filter(Boolean).slice(0,10);const itemCover=(data?.items||[]).find(x=>x?.cover)?.cover?.medium||'';
+  return {source:'Open Library',sourceId:key,title:d.title||'Untitled',author,publisher:publishers[0]||'',year:String(d.publish_date||record?.publishDates?.[0]||'').slice(0,4),description:typeof d.notes==='string'?d.notes:'',cover:cleanImg(itemCover||`https://covers.openlibrary.org/b/isbn/${encodeURIComponent(isbn)}-M.jpg`),isbn,pageCount:d.number_of_pages||d.pagination||'',subjects};
+}
+async function fetchJSON(url,timeout=9000){const c=new AbortController(),t=setTimeout(()=>c.abort(),timeout);try{const r=await fetch(url,{signal:c.signal,mode:'cors',cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);return await r.json()}finally{clearTimeout(t)}}
+async function fetchJSONWithHeaders(url,headers={},timeout=9000){const c=new AbortController(),t=setTimeout(()=>c.abort(),timeout);try{const r=await fetch(url,{signal:c.signal,mode:'cors',cache:'no-store',headers});if(!r.ok)throw new Error('HTTP '+r.status);return await r.json()}finally{clearTimeout(t)}}
+async function openLibraryJSON(url){try{return await fetchJSON(url)}catch(e){return await jsonpRequest(url,9000)}}
+function dedupeBooks(list){const out=[],isbnMap=new Map(),taMap=new Map();const merge=(old,b)=>{const sourceNames=[...(old.sourceNames||[old.source]),...(b.sourceNames||[b.source])].filter(Boolean);return {...old,...b,source:old.source==='Built-in catalog'?b.source||old.source:old.source,sourceNames:[...new Set(sourceNames)],sourceId:b.sourceId||old.sourceId,cover:b.cover||old.cover,description:b.description||old.description,isbn:b.isbn||old.isbn,subjects:(b.subjects?.length?b.subjects:old.subjects)||[],subtitle:b.subtitle||old.subtitle||'',publisher:b.publisher||old.publisher,year:b.year||old.year,publishedDate:b.publishedDate||old.publishedDate||'',pageCount:b.pageCount||old.pageCount,language:b.language||old.language||'',binding:b.binding||old.binding||'',editionCount:b.editionCount||old.editionCount||'',doi:b.doi||old.doi||'',maturity:b.maturity||old.maturity||'',series:(seriesArray(b.series).length?seriesArray(b.series):seriesArray(old.series)),workKey:b.workKey||old.workKey||'',authorKey:b.authorKey||old.authorKey||'',publicScan:b.publicScan||old.publicScan||false,iaId:b.iaId||old.iaId||'',ebookAccess:b.ebookAccess||old.ebookAccess||'',catalogRating:b.catalogRating||old.catalogRating||0,catalogRatingCount:b.catalogRatingCount||old.catalogRatingCount||0}};for(const b of list){if(!b||!b.title)continue;const ik=b.isbn?normalizeISBN(b.isbn):'',tk=`${normalizeText(b.title)}|${normalizeText(b.author)}`;let idx=ik&&isbnMap.has(ik)?isbnMap.get(ik):null;if(idx===null&&taMap.has(tk)){const ti=taMap.get(tk),old=out[ti];if(old.source==='Built-in catalog'||b.source==='Built-in catalog'||!old.isbn||!b.isbn)idx=ti}if(idx!==null){out[idx]=merge(out[idx],b);if(out[idx].isbn)isbnMap.set(normalizeISBN(out[idx].isbn),idx);taMap.set(tk,idx)}else{const ni=out.length;out.push(b);if(ik)isbnMap.set(ik,ni);taMap.set(tk,ni)}}return out}
+function bestSeedFor(q){const x=searchBuiltIn(q);return x[0]||null}
+async function googleLookup(query,seed){const qs=[];const p=titleAuthorParts(query);if(p)qs.push(`intitle:${p.title} inauthor:${p.author}`);else if(seed)qs.push(`intitle:${seed.title} inauthor:${seed.author}`);qs.push(query);let out=[],errors=[];for(const q of [...new Set(qs)]){try{const d=await jsonpRequest(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=20&printType=books`,10000);out.push(...(d?.items||[]).map(googleBook))}catch(e){errors.push('Google Books');break}}return {results:out,errors}}
+async function openLibraryLookup(query,seed){const p=titleAuthorParts(query);const urls=[];if(p)urls.push(`https://openlibrary.org/search.json?title=${encodeURIComponent(p.title)}&author=${encodeURIComponent(p.author)}&limit=20&fields=key,title,author_name,first_publish_year,isbn,cover_i,publisher,subject,number_of_pages_median,ratings_average,ratings_count`);else if(seed)urls.push(`https://openlibrary.org/search.json?title=${encodeURIComponent(seed.title)}&author=${encodeURIComponent(seed.author)}&limit=20&fields=key,title,author_name,first_publish_year,isbn,cover_i,publisher,subject,number_of_pages_median,ratings_average,ratings_count`);urls.push(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=20&fields=key,title,author_name,first_publish_year,isbn,cover_i,publisher,subject,number_of_pages_median,ratings_average,ratings_count`);let out=[],errors=[];for(const u of [...new Set(urls)]){try{const d=await openLibraryJSON(u);out.push(...(d?.docs||[]).map(openLibraryBook))}catch(e){errors.push('Open Library');break}}return {results:out,errors}}
+async function exactISBNLookup(isbn){let out=[],errors=[];const local=builtInBooks.filter(b=>normalizeISBN(b.isbn)===isbn);out.push(...local);const settled=await Promise.allSettled([
+  jsonpRequest(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent('isbn:'+isbn)}&maxResults=10&printType=books`,10000),
+  openLibraryJSON(`https://openlibrary.org/search.json?isbn=${encodeURIComponent(isbn)}&limit=10&fields=key,title,author_name,first_publish_year,isbn,cover_i,publisher,subject,number_of_pages_median,ratings_average,ratings_count`)
+]);
+if(settled[0].status==='fulfilled')out.push(...(settled[0].value?.items||[]).map(googleBook));else errors.push('Google Books');
+if(settled[1].status==='fulfilled')out.push(...(settled[1].value?.docs||[]).map(openLibraryBook));else errors.push('Open Library');
+if(!out.length){try{const od=await jsonpRequest(`https://openlibrary.org/api/volumes/brief/isbn/${encodeURIComponent(isbn)}.json`,9000);const b=openLibraryReadBook(od,isbn);if(b)out.push(b)}catch(e){}}
+return {results:dedupeBooks(out),errors}}
+async function generalCatalogLookup(query){const seed=bestSeedFor(query);const settled=await Promise.allSettled([googleLookup(query,seed),openLibraryLookup(query,seed)]);let out=[],errors=[];for(const r of settled){if(r.status==='fulfilled'){out.push(...r.value.results);errors.push(...r.value.errors)}else errors.push('catalog service')}return {results:dedupeBooks(out),errors:[...new Set(errors)]}}
+function locBook(x){const contrib=(x.contributor||x.contributors||[]);const numbers=x.number||[];const isbn=(Array.isArray(numbers)?numbers:[]).map(v=>typeof v==='string'?v:(v?.value||'')).find(v=>/97[89][0-9 -]{10,}/.test(v))||'';return {source:'Library of Congress',sourceId:x.id||x.url||'',title:x.title||'Untitled',author:(Array.isArray(contrib)?contrib:[]).map(v=>typeof v==='string'?v:(v?.title||v?.name||'')).filter(Boolean).join(', ')||'Unknown author',publisher:'',year:String(x.date||'').slice(0,4),description:(x.description||[])[0]||'',cover:'',isbn:normalizeISBN(isbn),subjects:(x.subject||[]).slice(0,10),pageCount:''}}
+function crossrefBook(x){const title=(x.title||[])[0]||'Untitled';const authors=(x.author||[]).map(a=>[a.given,a.family].filter(Boolean).join(' ')).join(', ')||'Unknown author';const isbn=(x.ISBN||[])[0]||'';const y=x.published?.['date-parts']?.[0]?.[0]||x.issued?.['date-parts']?.[0]?.[0]||'';return {source:'Crossref',sourceId:x.DOI||'',title,author:authors,publisher:x.publisher||'',year:String(y),description:x.abstract||'',cover:'',isbn,subjects:(x.subject||[]).slice(0,10),pageCount:'',doi:x.DOI||''}}
+function internetArchiveBook(x){
+  const creator=Array.isArray(x.creator)?x.creator.join(', '):(x.creator||x.author||'Unknown author');
+  const isbns=[...(Array.isArray(x.isbn)?x.isbn:[x.isbn]),...(Array.isArray(x.identifier_isbn)?x.identifier_isbn:[x.identifier_isbn])].filter(Boolean).map(normalizeISBN);
+  const isbn=isbns.find(v=>v.length===13)||isbns.find(v=>v.length===10)||'';
+  const subject=Array.isArray(x.subject)?x.subject:(x.subject?[x.subject]:[]);
+  const desc=Array.isArray(x.description)?x.description.join(' '):(x.description||'');
+  return {source:'Internet Archive',sourceId:x.identifier||'',title:x.title||'Untitled',author:creator,publisher:Array.isArray(x.publisher)?x.publisher[0]:(x.publisher||''),year:String(x.year||x.date||'').slice(0,4),description:desc,cover:'',isbn,subjects:subject.slice(0,10),pageCount:''};
+}
+function isbndbBook(x){
+  const authors=Array.isArray(x.authors)?x.authors.join(', '):(x.author||'Unknown author');
+  const isbn=normalizeISBN(x.isbn13||x.isbn||x.isbn10||'');
+  const subjects=Array.isArray(x.subjects)?x.subjects:(x.subjects?[x.subjects]:[]);
+  return {source:'ISBNdb',sourceId:isbn||x.title||'',title:x.title_long||x.title||'Untitled',author:authors,publisher:x.publisher||'',year:String(x.date_published||'').slice(0,4),description:x.synopsis||x.overview||x.excerpt||'',cover:'',isbn,subjects:subjects.slice(0,10),pageCount:x.pages||'',language:x.language||'',binding:x.binding||''};
+}
+
+function resultMatchScore(book,q){
+  const isbnMode=isISBNLike(q),isbn=normalizeISBN(q);
+  if(isbnMode)return normalizeISBN(book.isbn)===isbn?500:0;
+  return matchScoreForIntent(book,searchIntent(q),q);
+}
+function rankSearchResults(list,q){
+  const scored=dedupeBooks(list).map(b=>({b,score:resultMatchScore(b,q)})).sort((a,b)=>b.score-a.score);
+  if(isISBNLike(q))return scored.filter(x=>x.score>=500).slice(0,8).map(x=>x.b);
+  if(!scored.length)return [];
+  const top=scored[0].score;
+  const cutoff=top>=400?220:top>=300?190:top>=220?135:100;
+  const focused=scored.filter(x=>x.score>=cutoff);
+  const seenWorks=new Set(),collapsed=[];
+  for(const x of focused){
+    const key=`${normalizeText(x.b.title)}|${normalizeText(x.b.author)}`;
+    if(seenWorks.has(key))continue;
+    seenWorks.add(key);collapsed.push(x.b);
+    if(collapsed.length>=10)break;
+  }
+  return collapsed;
+}
+function confidentEnough(list,q){
+  if(!list.length)return false;
+  const top=resultMatchScore(list[0],q);
+  if(isISBNLike(q))return top>=500;
+  return top>=300;
+}
+async function catalogSourceLookup(source,q){
+  const isbnMode=isISBNLike(q),isbn=normalizeISBN(q),intent=searchIntent(q),parts=intent.kind==='titleAuthor'?{title:intent.title,author:intent.author}:titleAuthorParts(q);
+  const unique=a=>[...new Set(a.filter(Boolean))];
+  if(source==='google'){
+    const variants=isbnMode
+      ?[`isbn:${isbn}`,isbn]
+      :parts
+        ?[`intitle:\"${parts.title}\" inauthor:\"${parts.author}\"`,`intitle:\"${parts.title}\"`,`${parts.title} ${parts.author}`]
+        :[`intitle:\"${q}\"`,q];
+    const keyPart=state.googleBooksKey?`&key=${encodeURIComponent(state.googleBooksKey)}`:'';
+    let out=[];
+    for(const cq of unique(variants)){
+      try{
+        const d=await jsonpRequest(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(cq)}&maxResults=40&printType=books&projection=full${keyPart}`,12000);
+        out.push(...(d?.items||[]).map(googleBook));
+        if(isbnMode&&out.some(b=>normalizeISBN(b.isbn)===isbn))break;
+        if(!isbnMode&&rankSearchResults(out,q).some(b=>resultMatchScore(b,q)>=300))break;
+      }catch(e){ if(!out.length)throw e; break; }
+    }
+    return dedupeBooks(out);
+  }
+  if(source==='openlibrary'){
+    const fields='key,title,subtitle,author_name,author_key,first_publish_year,isbn,publisher,subject,series,number_of_pages_median,edition_count,language,ratings_average,ratings_count,public_scan_b,ia,ebook_access';
+    const urls=isbnMode
+      ?[
+        `https://openlibrary.org/search.json?isbn=${encodeURIComponent(isbn)}&limit=50&fields=${fields}`,
+        `https://openlibrary.org/search.json?q=${encodeURIComponent('isbn:'+isbn)}&limit=50&fields=${fields}`
+      ]
+      :parts
+        ?[
+          `https://openlibrary.org/search.json?title=${encodeURIComponent(parts.title)}&author=${encodeURIComponent(parts.author)}&limit=50&fields=${fields}`,
+          `https://openlibrary.org/search.json?title=${encodeURIComponent(parts.title)}&limit=50&fields=${fields}`,
+          `https://openlibrary.org/search.json?q=${encodeURIComponent(parts.title+' '+parts.author)}&limit=50&fields=${fields}`
+        ]
+        :[
+          `https://openlibrary.org/search.json?title=${encodeURIComponent(q)}&limit=50&fields=${fields}`,
+          `https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=50&fields=${fields}`
+        ];
+    let out=[];
+    for(const url of unique(urls)){
+      try{const d=await openLibraryJSON(url);out.push(...(d?.docs||[]).map(openLibraryBook).map(x=>({...x,cover:''})));}
+      catch(e){if(!out.length)throw e;break}
+      if(isbnMode&&out.some(b=>normalizeISBN(b.isbn)===isbn))break;
+    }
+    // Open Library's identifier endpoint can sometimes resolve an edition that search does not.
+    if(isbnMode&&!out.some(b=>normalizeISBN(b.isbn)===isbn)){
+      try{const od=await openLibraryJSON(`https://openlibrary.org/api/volumes/brief/isbn/${encodeURIComponent(isbn)}.json`);const b=openLibraryReadBook(od,isbn);if(b)out.push({...b,cover:''})}catch(e){}
+    }
+    return dedupeBooks(out);
+  }
+  if(source==='isbndb'){
+    if(!state.isbndbKey)return [];
+    const headers={'Authorization':state.isbndbKey,'x-api-key':state.isbndbKey,'Accept':'application/json'};
+    if(isbnMode){
+      const d=await fetchJSONWithHeaders(`https://api2.isbndb.com/book/${encodeURIComponent(isbn)}?with_prices=false`,headers,12000);
+      return d?.book?[isbndbBook(d.book)]:[];
+    }
+    const term=parts?`${parts.title} ${parts.author}`:q;
+    const d=await fetchJSONWithHeaders(`https://api2.isbndb.com/books/${encodeURIComponent(term)}?page=1&pageSize=40`,headers,12000);
+    return (d?.books||[]).map(isbndbBook);
+  }
+  if(source==='loc'){
+    const terms=isbnMode?[isbn]:parts?[`${parts.title} ${parts.author}`,parts.title]:[q];
+    let out=[];
+    for(const term of unique(terms)){
+      try{const d=await fetchJSON(`https://www.loc.gov/books/?fo=json&c=50&q=${encodeURIComponent(term)}`,12000);out.push(...(d?.results||[]).map(locBook))}catch(e){if(!out.length)throw e;break}
+    }
+    return dedupeBooks(out);
+  }
+  if(source==='crossref'){
+    const urls=isbnMode
+      ?[`https://api.crossref.org/works?filter=isbn:${encodeURIComponent(isbn)}&rows=50`]
+      :parts
+        ?[`https://api.crossref.org/works?query.title=${encodeURIComponent(parts.title)}&query.author=${encodeURIComponent(parts.author)}&rows=50`,`https://api.crossref.org/works?query.bibliographic=${encodeURIComponent(q)}&rows=50`]
+        :[`https://api.crossref.org/works?query.bibliographic=${encodeURIComponent(q)}&rows=50`];
+    let out=[];
+    for(const url of unique(urls)){
+      try{const d=await fetchJSON(url,12000);out.push(...(d?.message?.items||[]).filter(x=>!x.type||new Set(['book','monograph','edited-book','reference-book']).has(String(x.type))).map(crossrefBook))}catch(e){if(!out.length)throw e;break}
+    }
+    return dedupeBooks(out);
+  }
+  if(source==='internetarchive'){
+    const escapeIA=v=>String(v||'').replace(/"/g,'\\"');
+    const queries=isbnMode
+      ?[`mediatype:texts AND isbn:\"${escapeIA(isbn)}\"`,`mediatype:texts AND identifier_isbn:\"${escapeIA(isbn)}\"`]
+      :parts
+        ?[`mediatype:texts AND title:\"${escapeIA(parts.title)}\" AND creator:\"${escapeIA(parts.author)}\"`,`mediatype:texts AND title:(${escapeIA(parts.title)}) AND creator:(${escapeIA(parts.author)})`]
+        :[`mediatype:texts AND title:\"${escapeIA(q)}\"`,`mediatype:texts AND title:(${escapeIA(q)})`];
+    let out=[];
+    for(const iq of unique(queries)){
+      const url=`https://archive.org/advancedsearch.php?q=${encodeURIComponent(iq)}&fl%5B%5D=identifier&fl%5B%5D=title&fl%5B%5D=creator&fl%5B%5D=date&fl%5B%5D=year&fl%5B%5D=publisher&fl%5B%5D=description&fl%5B%5D=subject&fl%5B%5D=isbn&fl%5B%5D=identifier-isbn&rows=50&page=1&output=json`;
+      try{const d=await fetchJSON(url,12000);out.push(...(d?.response?.docs||[]).map(internetArchiveBook))}catch(e){if(!out.length)throw e;break}
+      if(isbnMode&&out.some(b=>normalizeISBN(b.isbn)===isbn))break;
+    }
+    return dedupeBooks(out);
+  }
+  return [];
+}
+async function catalogAuthorLookup(source,name){
+  const clean=String(name||'').trim();if(!clean)return [];
+  if(source==='openlibrary'){
+    let canonical=clean;
+    try{const ad=await fetchJSON(`https://openlibrary.org/search/authors.json?q=${encodeURIComponent(clean)}&limit=5`,10000);if(ad?.docs?.[0]?.name)canonical=ad.docs[0].name}catch(e){}
+    const fields='key,title,subtitle,author_name,author_key,first_publish_year,isbn,publisher,subject,series,number_of_pages_median,edition_count,language,ratings_average,ratings_count,public_scan_b,ia,ebook_access';
+    const d=await openLibraryJSON(`https://openlibrary.org/search.json?author=${encodeURIComponent(canonical)}&limit=100&fields=${fields}`);
+    return (d?.docs||[]).map(openLibraryBook).filter(b=>tokenCoverage(clean,b.author)>=.45);
+  }
+  if(source==='google'){
+    const keyPart=state.googleBooksKey?`&key=${encodeURIComponent(state.googleBooksKey)}`:'';
+    const d=await jsonpRequest(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent('inauthor:"'+clean+'"')}&maxResults=40&printType=books&projection=full${keyPart}`,12000);
+    return (d?.items||[]).map(googleBook).filter(b=>tokenCoverage(clean,b.author)>=.45);
+  }
+  if(source==='loc'){
+    const d=await fetchJSON(`https://www.loc.gov/books/?fo=json&c=50&q=${encodeURIComponent(clean)}`,12000);
+    return (d?.results||[]).map(locBook).filter(b=>tokenCoverage(clean,b.author)>=.45);
+  }
+  if(source==='internetarchive'){
+    const q=`mediatype:texts AND creator:"${clean.replace(/"/g,'\\"')}"`;
+    const url=`https://archive.org/advancedsearch.php?q=${encodeURIComponent(q)}&fl%5B%5D=identifier&fl%5B%5D=title&fl%5B%5D=creator&fl%5B%5D=date&fl%5B%5D=year&fl%5B%5D=publisher&fl%5B%5D=description&fl%5B%5D=subject&fl%5B%5D=isbn&fl%5B%5D=identifier-isbn&rows=50&page=1&output=json`;
+    const d=await fetchJSON(url,12000);return (d?.response?.docs||[]).map(internetArchiveBook).filter(b=>tokenCoverage(clean,b.author)>=.45);
+  }
+  return [];
+}
+async function browseAuthorSeries(){
+  const input=document.getElementById('bookQuery'),q=(input?.value||lastQuery).trim();
+  if(!q||searchBusy){if(!q){searchNotice='Enter an author name first.';render()}return}
+  if(isISBNLike(q)){searchNotice='That looks like an ISBN. Use Search for an exact edition lookup; author browsing expects a person\'s name.';render();return}
+  lastQuery=q;route='search';searchMode='author';authorBrowseName=q;searchBusy=true;catalogsChecked=[];searchProgress='Finding this author and their books…';
+  let combined=[...builtInBooks,...state.customBooks].filter(b=>tokenCoverage(q,b.author)>=.55);
+  searchResults=dedupeBooks(combined);render();
+  for(const source of ['openlibrary','google','loc','internetarchive']){
+    searchProgress=`Building ${q}'s author shelf…`;render();
+    try{combined=dedupeBooks([...combined,...await catalogAuthorLookup(source,q)]);catalogsChecked.push(source)}catch(e){catalogsChecked.push(source)}
+  }
+  searchResults=dedupeBooks(combined).filter(b=>tokenCoverage(q,b.author)>=.42).sort((a,b)=>{const as=seriesArray(a.series)[0]||'~~~',bs=seriesArray(b.series)[0]||'~~~';if(as!==bs)return as.localeCompare(bs);const ay=Number(a.year)||9999,by=Number(b.year)||9999;if(ay!==by)return ay-by;return String(a.title).localeCompare(String(b.title))}).slice(0,80);
+  searchBusy=false;searchNotice=searchResults.length?`Found ${searchResults.length} books associated with ${q}. Known series are grouped when catalog metadata identifies them.`:`No strong author matches were found for “${q}”. Try the author's full published name.`;render();
+}
+function sourceFriendlyName(source){return source==='google'?'book catalog':source==='openlibrary'?'library catalog':source==='loc'?'national library catalog':source==='internetarchive'?'archive catalog':source==='isbndb'?'extended ISBN catalog':'publisher metadata catalog'}
+async function searchBooks(){
+  const input=document.getElementById('bookQuery'),q=(input?.value||lastQuery).trim();
+  if(!q||searchBusy){if(!q){searchNotice='Enter a title, author, or ISBN first.';render()}return}
+  lastQuery=q;searchMode='book';authorBrowseName='';
+  const isbnMode=isISBNLike(q),isbn=normalizeISBN(q);
+  if(isbnMode&&!validISBN(isbn)){searchNotice=`ISBN ${isbn} has an unusual checksum. Double-check the number and try again.`;render();return}
+
+  searchBusy=true;catalogsChecked=[];
+  let combined=isbnMode
+    ?[...builtInBooks,...state.customBooks].filter(b=>normalizeISBN(b.isbn)===isbn)
+    :searchBuiltIn(q);
+  searchResults=rankSearchResults(combined,q);
+
+  // Discovery is independent of content-guide coverage. Only an exact locally stored ISBN can short-circuit network lookup.
+  if(isbnMode&&searchResults.length&&normalizeISBN(searchResults[0].isbn)===isbn){
+    searchBusy=false;
+    searchNotice='Found the exact ISBN in your local BookGuide catalog.';
+    render();return;
+  }
+
+  const order=isbnMode?['openlibrary','google','loc','crossref','internetarchive']:['google','openlibrary','loc','crossref','internetarchive'];
+  for(let i=0;i<order.length;i++){
+    const source=order[i];
+    searchProgress=i===0?'Searching book catalogs…':`Checking additional book catalogs…`;
+    render();
+    try{
+      const found=await catalogSourceLookup(source,q);
+      catalogsChecked.push(source);
+      combined=dedupeBooks([...combined,...found]);
+      searchResults=rankSearchResults(combined,q);
+      // ISBN searches can stop on an exact identifier. Title/author searches always check at least
+      // the two broadest catalogs before deciding whether later sources are necessary.
+      if(isbnMode){const exact=searchResults.find(b=>normalizeISBN(b.isbn)===isbn);const completeness=exact?[exact.title,exact.author,exact.publisher,exact.year,exact.pageCount,exact.subjects?.length,exact.description].filter(Boolean).length:0;const sourceCount=exact?(exact.sourceNames||[exact.source]).filter(Boolean).length:0;if(exact&&completeness>=5&&sourceCount>=2)break;}
+      if(!isbnMode&&i>=1&&confidentEnough(searchResults,q)&&searchResults.length>=3)break;
+    }catch(e){
+      catalogsChecked.push(source);
+      // Quietly continue to the next source. One failed catalog should never derail the search.
+    }
+  }
+
+  searchBusy=false;
+  searchResults=rankSearchResults(combined,q);
+  if(searchResults.length){
+    searchNotice=`Found ${searchResults.length} strong match${searchResults.length===1?'':'es'}. Results are ranked by title, author, and edition match — not by whether ratings exist.`;
+  }else{
+    searchNotice=`We couldn’t find “${q}” in the available catalogs. You can add the book manually, and authors or publishers can submit an authorized manuscript for analysis.`;
+  }
+  render();
+}
+
+function openAddBook(prefill={}){document.getElementById('modalContent').innerHTML=`<h2>Add a missing book</h2><p class="small muted">Create a local catalog record without waiting for a third-party database to know about the title.</p><div class="form-field"><label>Title</label><input id="addTitle" value="${esc(prefill.title||'')}"></div><div class="form-field"><label>Author</label><input id="addAuthor" value="${esc(prefill.author||'')}"></div><div class="form-field"><label>ISBN-10 or ISBN-13</label><input id="addIsbn" inputmode="numeric" value="${esc(prefill.isbn||'')}"></div><div class="form-field"><label>Publisher</label><input id="addPublisher" value="${esc(prefill.publisher||'')}"></div><div class="form-field"><label>Publication year</label><input id="addYear" inputmode="numeric" value="${esc(prefill.year||'')}"></div><button class="btn full" onclick="saveAddedBook(false)">Add to my catalog</button><button class="btn secondary full" style="margin-top:8px" onclick="saveAddedBook(true)">Add + claim as rights holder</button>`;document.getElementById('modal').showModal()}
+function saveAddedBook(claim){const title=document.getElementById('addTitle').value.trim(),author=document.getElementById('addAuthor').value.trim(),isbn=normalizeISBN(document.getElementById('addIsbn').value),publisher=document.getElementById('addPublisher').value.trim(),year=document.getElementById('addYear').value.trim();if(!title||!author){alert('Title and author are required.');return}const b={source:'User-added catalog',sourceId:'user-'+Date.now(),title,author,isbn,publisher,year,description:'',cover:'',subjects:[],pageCount:''};const id=makeId(b);const i=state.customBooks.findIndex(x=>makeId(x)===id);if(i>=0)state.customBooks[i]=b;else state.customBooks.unshift(b);save();document.getElementById('modal').close();lastQuery=isbn||`${title} by ${author}`;searchResults=dedupeBooks([b,...searchBuiltIn(lastQuery)]);searchNotice='Book added to the local catalog.';selectedBook=b;if(claim)setTimeout(()=>openClaimBook(b),0);else render()}
+function openClaimFromSearch(){const q=(document.getElementById('bookQuery')?.value||lastQuery).trim();const p=titleAuthorParts(q);openAddBook({title:p?.title||(!isISBNLike(q)?q:''),author:p?.author||'',isbn:isISBNLike(q)?normalizeISBN(q):''})}
+function findRightsProfile(b){return state.rightsProfiles[makeId(b)]||null}
+function openClaimBook(b=selectedBook){if(!b)return;document.getElementById('modalContent').innerHTML=`<h2>Author / publisher submission</h2><p class="small muted">For <strong>${esc(b.title)}</strong>. Only upload text you own, control, or are authorized to submit for analysis.</p><label class="toggle-row"><span>I am the author, publisher, or authorized rights holder</span><input type="checkbox" id="rightsConfirm"></label><div class="upload-box"><strong>Upload authorized manuscript</strong><p class="analysis-note">Supported locally: TXT, MD, HTML/HTM, DOCX, and EPUB. PDF requires the production backend because reliable PDF text extraction is not bundled into this single-file prototype.</p><input id="manuscriptFile" type="file" accept=".txt,.md,.html,.htm,.docx,.epub,text/plain,text/html,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/epub+zip"></div><button class="btn full" onclick="analyzeClaimedManuscript('${esc(makeId(b)).replace(/'/g,"\\'")}')">Analyze full manuscript</button><p class="analysis-note">The manuscript is processed in this browser. This prototype stores the derived ratings and notes, not the manuscript text itself.</p>`;document.getElementById('modal').showModal()}
+async function inflateRaw(bytes){if(typeof DecompressionStream==='undefined')throw new Error('This browser cannot unpack DOCX/EPUB locally.');const ds=new DecompressionStream('deflate-raw');const stream=new Blob([bytes]).stream().pipeThrough(ds);return new Uint8Array(await new Response(stream).arrayBuffer())}
+function findEOCD(v){for(let i=v.byteLength-22;i>=Math.max(0,v.byteLength-65557);i--)if(v.getUint32(i,true)===0x06054b50)return i;return -1}
+async function zipEntries(file){const ab=await file.arrayBuffer(),v=new DataView(ab),e=findEOCD(v);if(e<0)throw new Error('ZIP structure not found');const total=v.getUint16(e+10,true),off=v.getUint32(e+16,true),dec=new TextDecoder(),out=[];let p=off;for(let n=0;n<total&&p+46<=v.byteLength;n++){if(v.getUint32(p,true)!==0x02014b50)break;const method=v.getUint16(p+10,true),cs=v.getUint32(p+20,true),fn=v.getUint16(p+28,true),ex=v.getUint16(p+30,true),cm=v.getUint16(p+32,true),lo=v.getUint32(p+42,true),name=dec.decode(new Uint8Array(ab,p+46,fn));const lfn=v.getUint16(lo+26,true),lex=v.getUint16(lo+28,true),ds=lo+30+lfn+lex,raw=new Uint8Array(ab,ds,cs);let bytes;if(method===0)bytes=raw;else if(method===8)bytes=await inflateRaw(raw);else{p+=46+fn+ex+cm;continue}out.push({name,bytes});p+=46+fn+ex+cm}return out}
+function htmlToText(html){const d=new DOMParser().parseFromString(html,'text/html');return (d.body?.textContent||'').replace(/\s+/g,' ').trim()}
+function xmlToText(xml){return htmlToText(String(xml).replace(/<\/w:p>/g,'\n').replace(/<w:tab\/?\s*>/g,'\t'))}
+async function extractManuscriptText(file){const name=file.name.toLowerCase(),dec=new TextDecoder();if(/\.(txt|md)$/.test(name))return dec.decode(await file.arrayBuffer());if(/\.(html?|xhtml)$/.test(name))return htmlToText(dec.decode(await file.arrayBuffer()));if(name.endsWith('.docx')){const es=await zipEntries(file),parts=es.filter(e=>/^word\/(document|footnotes|endnotes)\.xml$/i.test(e.name));if(!parts.length)throw new Error('No DOCX document text found');return parts.map(e=>xmlToText(dec.decode(e.bytes))).join('\n')}if(name.endsWith('.epub')){const es=await zipEntries(file),parts=es.filter(e=>/\.(xhtml|html|htm)$/i.test(e.name)&&!/nav|toc/i.test(e.name));if(!parts.length)throw new Error('No EPUB chapter text found');return parts.map(e=>htmlToText(dec.decode(e.bytes))).join('\n')}throw new Error('Unsupported file type in this local prototype.')}
+const analysisLex={language:[['strong profanity',/\b(fuck(?:ing|ed)?|motherfucker|cunt)\b/gi,3],['profanity',/\b(shit|bitch|asshole|bastard|damn|hell)\b/gi,1]],violence:[['shootings or gun violence',/\b(shoot|shot|gunfire|gunshot|pistol|rifle)\w*\b/gi,2],['stabbing or cutting violence',/\b(stab|slit|knife attack|cut his throat|cut her throat)\w*\b/gi,3],['blood or serious injury',/\b(blood|bleeding|wound|broken bone|fractur|gore|mutilat)\w*\b/gi,2],['physical fights or attacks',/\b(punch|kick|beat|fight|attack|strangl|chok|tortur)\w*\b/gi,2],['killing or murder',/\b(kill|murder|execute|decapitat)\w*\b/gi,3]],sexual:[['explicit sexual activity',/\b(intercourse|orgasm|masturbat|oral sex|anal sex|sexual intercourse)\w*\b/gi,3],['sexual assault or rape',/\b(rape|raped|sexual assault|molest)\w*\b/gi,3],['nudity or sexual anatomy',/\b(naked|nude|breast|penis|vagina|genitals)\w*\b/gi,2],['sexual references',/\b(sex|sexual)\w*\b/gi,1]],romance:[['kissing or physical affection',/\b(kiss|make out|embrace|caress)\w*\b/gi,1],['dating or romantic relationships',/\b(boyfriend|girlfriend|dating|romance|crush|in love)\b/gi,1]],substances:[['alcohol use',/\b(beer|wine|whiskey|vodka|rum|drunk|alcohol)\w*\b/gi,1],['smoking or nicotine',/\b(cigarette|smoking|tobacco|vape|nicotine)\w*\b/gi,1],['drug use',/\b(marijuana|cocaine|heroin|meth|opioid|narcotic|drug overdose|overdose)\w*\b/gi,2]],fear:[['terror or panic',/\b(terrified|horror|panic|nightmare|scream|dread|frighten)\w*\b/gi,1],['threatening or frightening creatures',/\b(monster|demon|ghost|haunted|creature)\w*\b/gi,1],['kidnapping or captivity',/\b(kidnap|abduct|captive|imprison)\w*\b/gi,2]],death:[['death or corpses',/\b(dead|death|died|dying|corpse|funeral|grave|burial)\w*\b/gi,2],['killing',/\b(killed|murdered|slain|execute)\w*\b/gi,3]],bullying:[['bullying or harassment',/\b(bully|bullied|tease|mock|humiliat|harass|taunt)\w*\b/gi,2]],abuse:[['abuse or neglect',/\b(abuse|abused|neglect|domestic violence|child abuse|molest)\w*\b/gi,3],['coercion or controlling behavior',/\b(coerc|threaten|intimidat|control him|control her)\w*\b/gi,1]],selfharm:[['suicide',/\b(suicide|suicidal|kill myself|kill himself|kill herself|wants to die|wanted to die)\b/gi,3],['self-harm',/\b(self[- ]?harm|cut himself|cut herself|cutting herself|cutting himself)\b/gi,3],['overdose',/\b(overdose|overdosed)\w*\b/gi,2]],hate:[['racism or discrimination',/\b(racist|racism|antisemit|homophob|transphob|discriminat|hate crime|racial slur)\w*\b/gi,3]],animal:[['animal death or killing',/\b(dog|cat|horse|animal|pet|bird|deer|rabbit)\b.{0,35}\b(kill|killed|dead|died|slaughter|shot|injur)\w*\b/gi,3],['hunting or slaughter',/\b(hunt|hunting|slaughter|butcher)\w*\b/gi,1]]};
+function analysisScore(weighted,maxW,words){if(!weighted)return 1;const d=weighted/Math.max(words,1000)*10000;let s=2;if(maxW>=3)s=3;if(d>=2||weighted>=10)s=Math.max(s,3);if(d>=5||weighted>=25)s=Math.max(s,4);if(d>=12||weighted>=60)s=5;return Math.min(5,s)}
+function analyzeText(text){
+  const words=(text.match(/\b[\w’'-]+\b/g)||[]).length,categoriesOut={},details={},triggers=[],analysisMeta={};
+  for(const [k,label] of categories){
+    let weighted=0,maxW=0,totalRefs=0;const signals=[];
+    for(const [sig,re,w] of (analysisLex[k]||[])){
+      re.lastIndex=0;const m=text.match(re)||[];
+      if(m.length){weighted+=m.length*w;totalRefs+=m.length;maxW=Math.max(maxW,w);signals.push({label:sig,count:m.length,weight:w});triggers.push(sig)}
+    }
+    const score=analysisScore(weighted,maxW,words);categoriesOut[k]=score;
+    const frequency=weighted>=50?'Frequent':weighted>=20?'Repeated':weighted>=6?'Several instances':weighted?'Limited':'No meaningful indicators';
+    const sorted=signals.sort((a,b)=>(b.count*b.weight)-(a.count*a.weight));
+    const strongest=sorted[0]?.label||'';
+    details[k]=signals.length?`Automated full-text screening found ${frequency.toLowerCase()} indicators in this category. Detected content includes ${sorted.slice(0,6).map(x=>`${x.label} (${x.count} reference${x.count===1?'':'s'})`).join(', ')}. This is a screening summary, not a quotation from the manuscript.`:'No meaningful indicators for this category were detected by the local full-text screening rules.';
+    analysisMeta[k]={frequency,references:totalRefs,strongest,signals:sorted,rationale:score<=1?'No meaningful matching indicators were detected.':score===2?'The content appears limited or low-intensity based on the number and strength of detected references.':score===3?'Multiple or stronger indicators appear often enough to warrant a moderate concern score.':score===4?'Strong indicators and/or repeated occurrences make this a substantial content concern.':'Very frequent and/or very high-severity indicators make this an extreme screening concern.'};
+  }
+  const vals=Object.values(categoriesOut),severe=vals.filter(v=>v>=4).length;let age='8+';
+  if(categoriesOut.sexual>=5||categoriesOut.violence>=5||categoriesOut.selfharm>=5)age='16+';
+  else if(categoriesOut.sexual>=4||categoriesOut.selfharm>=4||severe>=3)age='14+';
+  else if(severe>=1||categoriesOut.death>=4||categoriesOut.fear>=4)age='12+';
+  else if(vals.filter(v=>v>=3).length>=3)age='10+';
+  details.age=`This automated recommendation is based on the strongest detected content categories, their frequency and approximately ${words.toLocaleString()} words of submitted text. A human/editorial review should confirm final age guidance.`;
+  return {age,categories:categoriesOut,triggers:[...new Set(triggers)].slice(0,12),details,analysisMeta,wordCount:words}
+}
+async function analyzeClaimedManuscript(id){const confirm=document.getElementById('rightsConfirm'),file=document.getElementById('manuscriptFile')?.files?.[0];if(!confirm?.checked){alert('Confirm that you are authorized to submit this manuscript.');return}if(!file){alert('Choose a manuscript file first.');return}const b=[...state.customBooks,...searchResults,state.saved].find(x=>makeId(x)===id)||selectedBook;if(!b){alert('Book record not found.');return}try{document.getElementById('modalContent').innerHTML='<h2>Analyzing manuscript…</h2><p class="small muted">Extracting the complete text and screening all supported content categories locally.</p>';const text=await extractManuscriptText(file);if(text.length<500){throw new Error('The extracted manuscript text is too short to analyze reliably.')}const a=analyzeText(text);state.rightsProfiles[id]={title:b.title,author:b.author,age:a.age,categories:a.categories,triggers:a.triggers,details:a.details,analysisMeta:a.analysisMeta,sources:[{name:'Rights-holder Full-Text Analysis',kind:'Authorized manuscript analyzed locally'}],wordCount:a.wordCount,analyzedAt:new Date().toISOString(),fileType:file.name.split('.').pop().toUpperCase()};if(!state.customBooks.some(x=>makeId(x)===id))state.customBooks.unshift({...b,source:b.source||'Rights-holder submission',cover:''});save();document.getElementById('modal').close();selectedBook=b;render()}catch(e){document.getElementById('modalContent').innerHTML=`<h2>Could not analyze this file</h2><div class="notice">${esc(e.message||String(e))}</div><button class="btn full" style="margin-top:12px" onclick="document.getElementById('modal').close()">Close</button>`}}
+
+function establishedMatchScore(r,b){const nt=normalizeText(b.title),na=normalizeText(b.author),rt=normalizeText(r.title),ra=normalizeText(r.author),aliases=(r.aliases||[]).map(normalizeText);let s=0;if(nt===rt||aliases.includes(nt))s+=100;if(nt.includes(rt)||rt.includes(nt))s+=35;const ta=tokens(r.title),tb=tokens(b.title);s+=ta.filter(x=>tb.includes(x)).length*12;const aa=tokens(r.author),ab=tokens(b.author);s+=aa.filter(x=>ab.includes(x)).length*10;return s}
+function findEstablished(b){return null}
+function getRating(b){return b?state.ratings[makeId(b)]||null:null}
+function buildProfile(b){
+  if(!b)return null;
+  const rights=findRightsProfile(b),editorial=findEstablishedProfile(b),mine=getRating(b);
+  if(rights)return {quality:mine?.quality||0,age:rights.age||'',categories:{...rights.categories},confidence:'Authorized full-text screening',rights:true,mine:!!mine,profileType:'rights'};
+  if(editorial)return {quality:mine?.quality||0,age:editorial.age||'',categories:{...editorial.categories},confidence:editorial.confidence||'Detailed curated content guide',editorial:true,mine:!!mine,profileType:'editorial'};
+  if(mine)return {quality:mine.quality||0,age:mine.age||'',categories:{...mine.categories},confidence:'Your structured rating only',mine:true,profileType:'parent'};
+  return null;
+}
+function hasTrustedAnalysis(b){return !!(findRightsProfile(b)||findEstablishedProfile(b))}
+function analysisAvailabilityMarkup(b){
+  const rights=findRightsProfile(b),editorial=findEstablishedProfile(b),mine=getRating(b);
+  if(rights)return `<div class="evidence-badge">✓ Authorized manuscript screening available</div>`;
+  if(editorial)return `<div class="evidence-badge">✓ Detailed BookGuide content breakdown available</div>`;
+  if(mine)return `<div class="evidence-badge">Your structured rating is saved</div>`;
+  return `<div class="small muted" style="margin-top:7px">Content analysis not yet available</div>`;
+}
+function renderCommunityObservationSummary(mine){
+  if(!mine?.observations)return '';
+  const rows=categories.map(([k,label])=>{
+    const o=mine.observations?.[k];if(!o||(!(o.tags||[]).length&&!o.frequency&&!o.detail&&!o.where))return '';
+    const meta=[o.frequency&&`Frequency: ${o.frequency}`,o.detail&&`Detail: ${o.detail}`,o.where&&`Where: ${o.where}`].filter(Boolean).join(' • ');
+    return `<div class="community-detail-card"><strong>${esc(label)}</strong><div class="small muted">${esc(meta)}${meta&&(o.tags||[]).length?' • ':''}${(o.tags||[]).map(esc).join(' • ')}</div></div>`;
+  }).filter(Boolean).join('');
+  if(!rows)return '';
+  return `<div style="margin-top:14px"><strong>What you noticed</strong><p class="small muted">Structured observations only — no public written comments.</p>${rows}</div>`;
+}
+function renderMyStructuredRating(mine){
+  if(!mine)return '';
+  return `<section class="panel"><div class="section-head" style="margin:0"><div><h2>Your structured review</h2><p class="small muted">Your rating remains separate from BookGuide, licensed-source, or manuscript-based analysis.</p></div><span class="evidence-badge">Parent survey</span></div><div class="rating-overview" style="margin-top:12px"><div><div class="score-big">${mine.quality||'—'}${mine.quality?'<span style="font-size:22px">/5</span>':''}</div><div class="score-label">Overall quality • youngest recommended age <strong>${esc(mine.age||'—')}</strong></div></div><div class="warning-grid">${categories.map(([k,label])=>warningRow(label,mine.categories?.[k]||0)).join('')}</div></div>${renderCommunityObservationSummary(mine)}</section>`;
+}
+function bookCard(b,i){
+  const rights=findRightsProfile(b),editorial=findEstablishedProfile(b),mine=getRating(b);
+  const cover=`<div class="cover" style="display:grid;place-items:center;font-size:28px">📚</div>`;
+  const coverage=(b.sourceNames||[b.source]).filter(Boolean);
+  return `<article class="book-card">${cover}<div>
+    <h3>${esc(b.title)}${rights?'<span class="pre-rated">FULL TEXT</span>':editorial?'<span class="pre-rated">DETAILED GUIDE</span>':''}</h3>
+    <div class="book-meta">${esc(b.author)}${b.year?` • ${esc(b.year)}`:''}${b.publisher?`<br>${esc(b.publisher)}`:''}${b.isbn?`<br>ISBN ${esc(b.isbn)}`:''}</div>
+    ${analysisAvailabilityMarkup(b)}
+    <div class="book-actions"><button class="btn" onclick="openBook(${i})">View book</button><button class="btn secondary" onclick="saveBook(${i})">${state.saved.some(x=>makeId(x)===makeId(b))?'Saved':'Save'}</button><button class="btn ghost" onclick="rateBook(${i})">Read it? Add your take</button></div>
+    <details class="data-details"><summary>Catalog details</summary><p>${coverage.length>1?`Matched across ${coverage.length} catalog records.`:'Matched in the book catalog.'}</p></details>
+  </div></article>`
+}
+function openBook(i){
+  const b=searchResults[Number(i)];
+  if(!b){searchNotice='That result is no longer available. Please run the search again.';render();return}
+  selectedBook=b;
+  render();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function rateBook(i){const b=searchResults[Number(i)];if(!b)return;selectedBook=b;render();setTimeout(()=>startRating(),0)}
+function saveBook(i){
+  const b=searchResults[Number(i)];
+  if(!b){searchNotice='That result is no longer available. Please run the search again.';render();return}
+  const id=makeId(b),idx=state.saved.findIndex(x=>makeId(x)===id),copy={...b,cover:''};
+  if(idx>=0){state.saved[idx]=dedupeBooks([state.saved[idx],copy])[0]}else state.saved.unshift(copy);
+  save();
+  searchNotice=`Saved “${b.title}”. If you've read it, your structured observations can help the next parent.`;
+  render();
+}
+function cleanCatalogText(v){return String(v||'').replace(/<[^>]*>/g,' ').replace(/\\s+/g,' ').trim()}
+function metadataItem(label,value){if(value===undefined||value===null||String(value).trim()==='')return '';return `<div class="metadata-item"><span>${esc(label)}</span><strong>${esc(String(value))}</strong></div>`}
+function seriesArray(value){if(Array.isArray(value))return value.filter(Boolean);if(value===undefined||value===null||value==='')return [];return [String(value).trim()].filter(Boolean)}
+function seriesText(value){return seriesArray(value).join(' • ')}
+function renderEditionMetadata(b){
+  const sources=(b.sourceNames||[b.source]).filter(Boolean);
+  return `<section class="panel"><div class="section-head" style="margin:0"><div><h2>Book information</h2><p class="small muted">Everything BookGuide could identify for this edition.</p></div></div><div class="metadata-grid">
+    ${metadataItem('Title',b.title)}${metadataItem('Subtitle',b.subtitle)}${metadataItem('Author',b.author)}${metadataItem('ISBN',b.isbn)}
+    ${metadataItem('Publisher',b.publisher)}${metadataItem('Publication date',b.publishedDate||b.year)}${metadataItem('Pages',b.pageCount)}${metadataItem('Language',b.language)}
+    ${metadataItem('Binding',b.binding)}${metadataItem('Series',seriesText(b.series))}${metadataItem('Edition records',b.editionCount)}${metadataItem('DOI',b.doi)}${metadataItem('Catalog maturity label',b.maturity)}${metadataItem('Public full-text signal',b.publicScan?'Available in open catalog':'')}
+  </div>${(b.subjects||[]).length?`<div style="margin-top:14px"><strong class="small">Subjects / categories</strong><div class="chips">${b.subjects.slice(0,12).map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div></div>`:''}
+  <details class="data-details"><summary>Catalog sources</summary><p>${esc(sources.join(', ')||'Local BookGuide record')}. These sources are used for identity and bibliographic information; they are not treated as content-review evidence.</p>${b.sourceId?`<p>Catalog record ID: ${esc(b.sourceId)}</p>`:''}</details></section>`;
+}
+function catalogRatingMarkup(b){return b.catalogRating?`<div class="evidence-badge">★ ${Number(b.catalogRating).toFixed(1)}/5${b.catalogRatingCount?` • ${Number(b.catalogRatingCount).toLocaleString()} catalog rating${Number(b.catalogRatingCount)===1?'':'s'}`:''}</div>`:''}
+function renderGuideSources(r){
+  if(!r?.sources?.length)return '';
+  const linked=r.sources.filter(s=>s&&s.url),curated=r.sources.filter(s=>s&&!s.url);
+  const note=linked.length
+    ?`BookGuide's scene-level wording is its own summary of the linked content guides/community-warning sources; review prose is not copied into the app.`
+    :`This profile comes from the detailed BookGuide-curated reference dataset used in v1.6. It is not presented as a licensed third-party review feed or a parent-community average.`;
+  return `<details class="data-details" style="margin-top:12px"><summary>Guide provenance</summary><p class="small muted">${esc(note)}</p><div class="stack" style="gap:8px;margin-top:10px">${linked.map(s=>`<a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer" class="source-link">${esc(s.name)} ↗</a>`).join('')}${curated.map(s=>`<div class="source-link" style="cursor:default"><strong>${esc(s.name||'BookGuide curated reference')}</strong>${s.kind?`<span class="small muted" style="display:block;margin-top:3px">${esc(s.kind)}</span>`:''}</div>`).join('')}</div></details>`
+}
+function guideProvenanceLabel(r){return (r?.sources||[]).some(s=>s?.url)?'Source-checked guide':'BookGuide curated guide'}
+function guideProvenanceText(r){return (r?.sources||[]).some(s=>s?.url)?'A spoiler-forward, book-specific breakdown is available for this title and is kept separate from parent survey ratings.':'A spoiler-forward, book-specific breakdown from BookGuide’s detailed v1.6 reference dataset is available for this title. It is kept separate from parent survey ratings and is not represented as a licensed external review feed.'}
+function renderDetail(b){
+  const profile=buildProfile(b),rights=findRightsProfile(b),editorial=findEstablishedProfile(b),mine=getRating(b),saved=state.saved.some(x=>makeId(x)===makeId(b));
+  const cover=`<div class="cover" style="display:grid;place-items:center;font-size:34px">📚</div>`;
+  const contentSection=profile
+    ?renderAggregate(profile)
+    :`<section class="empty"><strong>Why don’t you tell us what you noticed?</strong><p class="small">This book is in the catalog, but it does not yet have enough verified content evidence for a detailed BookGuide breakdown. Your structured parent review can help build the community picture without requiring any written comments. BookGuide will still avoid inventing scene details from a synopsis, popularity, title, or metadata.</p><div class="book-actions"><button class="btn" onclick="startRating()">Tell us what you noticed</button><button class="btn secondary" onclick="openClaimBook(selectedBook)">Author / publisher manuscript analysis</button></div></section>`;
+  return `<div class="detail"><button class="btn ghost" onclick="selectedBook=null;render()">← Back</button>
+  <section class="detail-top">${cover}<div><h2>${esc(b.title)}</h2>${b.subtitle?`<div style="font-weight:700;margin:-2px 0 5px">${esc(b.subtitle)}</div>`:''}<div class="muted">${esc(b.author)}</div><div class="book-meta" style="margin-top:8px">${b.publisher?esc(b.publisher):''}${(b.publishedDate||b.year)?` • ${esc(b.publishedDate||b.year)}`:''}${b.pageCount?` • ${esc(b.pageCount)} pages`:''}${b.isbn?`<br>ISBN ${esc(b.isbn)}`:''}</div>${catalogRatingMarkup(b)}${analysisAvailabilityMarkup(b)}<div class="chips">${(b.subjects||[]).slice(0,6).map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div><div class="book-actions"><button class="btn" onclick="startRating()">${mine?'Edit my review':'Rate this book'}</button><button class="btn secondary" onclick="toggleSavedSelected()">${saved?'Remove saved':'Save book'}</button><button class="btn ghost" onclick="openClaimBook(selectedBook)">Claim / analyze manuscript</button><button class="btn ghost" onclick="browseSelectedAuthor()">More by this author</button></div>${saved?'<div class="save-confirm">✓ Saved to your BookGuide shelf</div>':''}</div></section>
+  ${rights?`<section class="analysis-card"><div class="section-head" style="margin:0"><div><h2>Authorized full-text screening</h2><p class="small muted">Derived from a rights-holder manuscript submitted to this device. This is automated screening, not a copied third-party review.</p></div><span class="evidence-badge">${Number(rights.wordCount||0).toLocaleString()} words</span></div><div class="analysis-status"><div class="analysis-kpi"><strong>${esc(rights.age||'—')}</strong><span>automated age guidance</span></div><div class="analysis-kpi"><strong>${Object.values(rights.categories||{}).filter(v=>v>=4).length}</strong><span>strong/extreme categories</span></div><div class="analysis-kpi"><strong>${esc(rights.fileType||'TEXT')}</strong><span>analyzed source</span></div></div><p class="analysis-note">Because this prototype uses local deterministic screening rather than a server-side semantic model, treat these scores as preliminary screening. The detailed notes show what the detector found.</p></section>`:''}
+  ${editorial?`<section class="analysis-card"><div class="section-head" style="margin:0"><div><h2>Detailed BookGuide content guide</h2><p class="small muted">${esc(guideProvenanceText(editorial))}</p></div><span class="evidence-badge">${esc(guideProvenanceLabel(editorial))}</span></div>${editorial.triggers?.length?`<div class="chips" style="margin-top:12px">${editorial.triggers.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>`:''}${renderGuideSources(editorial)}</section>`:''}
+  ${contentSection}
+  ${editorial?renderContentExplanations(editorial):''}
+  ${rights?renderContentExplanations(rights):''}
+  ${mine?renderMyStructuredRating(mine):''}
+  <section class="contribute-prompt"><h3>${mine?'Want to make your review more useful?':'Have you read this book?'}</h3><p>${mine?'You can reopen your structured review and add frequency, where the content occurs, how explicitly it is described, and specific concern tags.':'Help the next parent with a structured, no-writing-needed review. Tell BookGuide the severity, frequency, where concerns appear, how explicitly they are described, and the specific content types you noticed.'}</p><div class="book-actions"><button class="btn" onclick="startRating()">${mine?'Add or refine details':'Help the next parent'}</button></div></section>
+  ${renderEditionMetadata(b)}<section class="panel"><div class="section-head" style="margin:0 0 10px"><h2>About this book</h2></div><p class="description-text">${esc(cleanCatalogText(b.description)||'No synopsis or description was included in the catalog records BookGuide found for this edition.')}</p></section></div>`
+}
+function browseSelectedAuthor(){if(!selectedBook?.author)return;lastQuery=selectedBook.author;route='search';selectedBook=null;render();setTimeout(()=>browseAuthorSeries(),0)}
+function renderAggregate(a){
+  const sourceText=a.profileType==='rights'?'authorized full-text screening':a.profileType==='editorial'?'detailed BookGuide content guide':'your structured parent rating';
+  return `<section class="rating-overview"><div class="panel"><div class="score-label">${a.quality?'Your quality rating':'Content guidance'}</div><div class="score-big">${a.quality||'—'}${a.quality?'<span style="font-size:22px">/5</span>':''}</div><div class="score-label">Recommended age: <strong>${esc(a.age||'Not enough data')}</strong></div><div class="confidence">● ${esc(a.confidence)}</div><div class="notice" style="margin-top:14px"><strong>Evidence:</strong> ${esc(sourceText)}. BookGuide keeps this evidence separate from parent survey ratings and does not create category scores merely because a book was found in a catalog.</div></div><div class="panel"><strong>${a.profileType==='parent'?'Your submitted content profile':'Available content guidance'}</strong><div class="warning-grid" style="margin-top:12px">${categories.map(([k,label])=>warningRow(label,a.categories?.[k]||0)).join('')}</div></div></section>`
+}
+function warningRow(label,v){const width=v?((v-1)/4*100):0,level=v?scaleLabels[Math.max(0,Math.min(4,Math.round(v)-1))]:'No data';return `<div class="warning-row"><span class="warning-name">${esc(label)}</span><div class="bar"><span style="width:${width}%"></span></div><span class="warning-value"><b class="level">${v?Number(v).toFixed(1):'—'}</b><small class="level-text">${level}</small></span></div>`}
+function renderEstablishedEvidence(r){return ''}
+
+function toggleSavedSelected(){if(!selectedBook)return;const id=makeId(selectedBook),i=state.saved.findIndex(x=>makeId(x)===id);if(i>=0)state.saved.splice(i,1);else state.saved.unshift({...selectedBook,cover:''});save();render()}
+let draft={};
+function startRating(){
+  draft=JSON.parse(JSON.stringify(getRating(selectedBook)||{quality:0,age:'',categories:{},observations:{}}));
+  if(!draft.categories)draft.categories={};if(!draft.observations)draft.observations={};
+  document.getElementById('modalContent').innerHTML=ratingForm(selectedBook);document.getElementById('modal').showModal()
+}
+function observationEditor(k){
+  const o=draft.observations?.[k]||{frequency:'',detail:'',where:'',tags:[]};
+  const options=observationOptions[k]||[];
+  return `<details class="obs-details"><summary>Add specific details (optional, no writing)</summary><div class="obs-body"><div class="obs-grid"><div class="obs-field"><div class="obs-label">How often?</div><div class="obs-frequency">${observationFrequencies.map(f=>`<button class="${o.frequency===f?'selected':''}" onclick="setObsFrequency('${k}','${f}')">${esc(f)}</button>`).join('')}</div></div><div class="obs-field"><div class="obs-label">How directly is it described?</div><div class="obs-frequency">${observationDetailLevels.map(f=>`<button class="${o.detail===f?'selected':''}" onclick="setObsDetail('${k}',${JSON.stringify(f).replace(/"/g,'&quot;')})">${esc(f)}</button>`).join('')}</div></div><div class="obs-field"><div class="obs-label">Where does it happen?</div><div class="obs-frequency">${observationLocations.map(f=>`<button class="${o.where===f?'selected':''}" onclick="setObsWhere('${k}','${f}')">${esc(f)}</button>`).join('')}</div></div></div><div class="obs-label">What did you notice?</div><div class="obs-chips">${options.map(tag=>`<button class="obs-chip ${(o.tags||[]).includes(tag)?'selected':''}" onclick="toggleObsTag('${k}',${JSON.stringify(tag).replace(/"/g,'&quot;')})">${esc(tag)}</button>`).join('')}</div></div></details>`;
+}
+function ratingForm(b){return `<h2>Rate ${esc(b.title)}</h2><p class="small muted">No written reviews. Choose severity, then add as much structured context as you can: frequency, how directly it is described, where it occurs, and the specific content you noticed.</p><div class="rate-group"><div class="rate-group-head"><strong>Overall book quality</strong><span class="small muted">1–5 stars</span></div><div class="stars">${[1,2,3,4,5].map(n=>`<button class="star ${draft.quality>=n?'selected':''}" onclick="setQuality(${n})">★</button>`).join('')}</div></div><div class="rate-group"><div class="rate-group-head"><strong>Youngest age you'd recommend</strong></div><div class="age-grid">${ageOptions.map(a=>`<button class="${draft.age===a?'selected':''}" onclick="setAge('${a}')">${a}</button>`).join('')}</div></div>${categories.map(([k,l])=>`<div class="rate-group"><div class="rate-group-head"><strong>${esc(l)}</strong><span class="small muted">${draft.categories[k]?scaleLabels[draft.categories[k]-1]:'Choose level'}</span></div><div class="scale">${[1,2,3,4,5].map(n=>`<button class="${draft.categories[k]===n?'selected':''}" onclick="setCat('${k}',${n})">${n}<br><span style="font-weight:500">${scaleLabels[n-1]}</span></button>`).join('')}</div>${observationEditor(k)}</div>`).join('')}<button class="btn full" onclick="submitRating()">Submit structured rating</button><button class="btn ghost full" style="margin-top:8px" onclick="document.getElementById('modal').close()">Cancel</button><p class="privacy-line">This prototype stores your structured choices on this device. A production version would aggregate the same fixed choices across parents. There is no parent-written public text.</p>`}
+function refreshRatingModal(){document.getElementById('modalContent').innerHTML=ratingForm(selectedBook)}
+function setQuality(n){draft.quality=n;refreshRatingModal()}function setAge(a){draft.age=a;refreshRatingModal()}function setCat(k,n){draft.categories[k]=n;refreshRatingModal()}
+function setObsFrequency(k,f){if(!draft.observations)draft.observations={};if(!draft.observations[k])draft.observations[k]={frequency:'',detail:'',where:'',tags:[]};draft.observations[k].frequency=draft.observations[k].frequency===f?'':f;refreshRatingModal()}
+function setObsDetail(k,f){if(!draft.observations)draft.observations={};if(!draft.observations[k])draft.observations[k]={frequency:'',detail:'',where:'',tags:[]};draft.observations[k].detail=draft.observations[k].detail===f?'':f;refreshRatingModal()}
+function setObsWhere(k,f){if(!draft.observations)draft.observations={};if(!draft.observations[k])draft.observations[k]={frequency:'',detail:'',where:'',tags:[]};draft.observations[k].where=draft.observations[k].where===f?'':f;refreshRatingModal()}
+function toggleObsTag(k,tag){if(!draft.observations)draft.observations={};if(!draft.observations[k])draft.observations[k]={frequency:'',detail:'',where:'',tags:[]};const tags=draft.observations[k].tags||[];const i=tags.indexOf(tag);if(i>=0)tags.splice(i,1);else tags.push(tag);draft.observations[k].tags=tags;refreshRatingModal()}
+function submitRating(){if(!draft.quality||!draft.age){alert('Please choose an overall quality rating and recommended age.');return}for(const [k] of categories)if(!draft.categories[k])draft.categories[k]=1;state.ratings[makeId(selectedBook)]=draft;save();document.getElementById('modal').close();render()}
+function renderSaved(){return `<div class="stack"><section class="hero"><div class="eyebrow">Your shelf</div><h2>Books you want to check, remember, or revisit.</h2><p>Saved books stay on this device in the prototype. If you've read one, you can help turn a thin content page into a more useful guide for the next parent.</p></section><div class="section-head"><h2>Saved books</h2><span class="small muted">${state.saved.length}</span></div>${state.saved.length?state.saved.map((b,i)=>`<div class="saved-row"><div class="cover" style="width:48px;height:68px;display:grid;place-items:center;font-size:22px">📚</div><div class="grow"><strong>${esc(b.title)}</strong><span class="small muted">${esc(b.author)}</span>${getRating(b)?'<span class="contribute-mini">✓ Your review is on this device</span>':'<span class="contribute-mini">Help the next parent</span>'}</div><div class="saved-actions"><button class="btn secondary" onclick="selectedBook=state.saved[${i}];render()">Open</button><button class="btn ghost" onclick="rateSaved(${i})">${getRating(b)?'Refine review':'Add your take'}</button><button class="icon-btn" onclick="removeSaved('${esc(makeId(b)).replace(/'/g,"\\'")}')">×</button></div></div>`).join(''):`<div class="empty">No saved books yet.</div>`}</div>`}
+function removeSaved(id){state.saved=state.saved.filter(b=>makeId(b)!==id);save();render()}
+function rateSaved(i){const b=state.saved[Number(i)];if(!b)return;selectedBook=b;render();setTimeout(()=>startRating(),0)}
+function renderRateHub(){
+  const rated=Object.keys(state.ratings).length,unrated=state.saved.map((b,i)=>({b,i})).filter(x=>!getRating(x.b));
+  return `<div class="stack"><section class="hero"><div class="eyebrow">Community ratings</div><h2>Help make the next parent's decision easier.</h2><p>No essays and no public comments. Parents contribute structured evidence: severity, frequency, where it happens, how directly it is described, and fixed concern tags.</p></section><section class="panel"><strong>Your prototype contributions</strong><div class="score-big" style="font-size:34px;margin-top:10px">${rated}</div><span class="score-label">books rated on this device</span></section>${unrated.length?`<section class="panel"><div class="section-head" style="margin:0"><div><h2>Saved books that still need your take</h2><p class="small muted">You already cared enough to save them. If you've read them, add a structured review.</p></div></div><div style="margin-top:10px">${unrated.slice(0,8).map(({b,i})=>`<div class="saved-row"><div class="grow"><strong>${esc(b.title)}</strong><span class="small muted">${esc(b.author)}</span></div><button class="btn secondary" onclick="rateSaved(${i})">Add your take</button></div>`).join('')}</div></section>`:''}<section class="panel"><h2 style="margin-top:0">What your contribution can add</h2><div class="toggle-row"><strong>Severity</strong><span>None → Extreme</span></div><div class="toggle-row"><strong>Frequency</strong><span>Once → Frequent</span></div><div class="toggle-row"><strong>Detail</strong><span>Implied → Detailed/graphic</span></div><div class="toggle-row"><strong>Location</strong><span>Beginning / Middle / End / Throughout</span></div><div class="toggle-row"><strong>Specific content</strong><span>Fixed concern tags, no free text</span></div></section><button class="btn full" onclick="go('search')">Find another book to rate</button></div>`
+}
+function renderSettings(){const active=themes[state.theme]||themes.parchment;return `<div class="stack"><section class="hero"><div class="eyebrow">Personalize the app</div><h2>Choose a reading-room look that feels like yours.</h2><p>Switch the entire interface between light and dark palettes. Your selection is saved automatically on this device.</p></section><section class="settings-card"><div class="theme-section-title"><h2>Color palette</h2><span class="mode-badge">${esc(active.mode)} mode</span></div><p class="small muted">Every palette changes backgrounds, cards, buttons, navigation, highlights, warning surfaces, and accents—not just one color.</p><div class="theme-grid">${Object.entries(themes).map(([id,t])=>`<button class="theme-card ${state.theme===id?'selected':''}" onclick="setTheme('${id}')"><div class="theme-swatches"><span style="background:${t.vars.bg}"></span><span style="background:${t.vars.panel2}"></span><span style="background:${t.vars.accent}"></span><span style="background:${t.vars.accent2}"></span><span style="background:${t.vars.hero2}"></span></div><div><strong>${esc(t.name)}</strong><small>${esc(t.mode)} • ${esc(t.desc)}</small>${state.theme===id?'<div class="chosen">✓ Current palette</div>':''}</div></button>`).join('')}</div></section><section class="settings-card"><h2 style="margin-top:0">Highlight these categories</h2><p class="small muted">Choose the content types you want the app to surface most prominently.</p>${categories.map(([k,l])=>`<label class="toggle-row"><span>${esc(l)}</span><input type="checkbox" ${state.avoid.includes(k)?'checked':''} onchange="toggleAvoid('${k}',this.checked)"></label>`).join('')}</section><section class="settings-card"><strong>Book search</strong><p class="small muted">ISBN is the preferred search key because it identifies a specific edition. Author browsing is the secondary discovery path and can group known series. Title search remains a fallback. During beta, BookGuide can query several public metadata catalogs behind the scenes; production should serve a local Open Library bulk-data index first.</p><details class="data-details"><summary>Advanced developer settings</summary><p>This optional key is only for testing this single-file prototype. In production it belongs on the BookGuide server and parents should never see or enter it.</p><div class="form-field"><label>Google Books API key</label><input id="googleBooksKey" type="password" value="${esc(state.googleBooksKey||'')}" placeholder="Optional Google key"></div><button class="btn secondary" onclick="saveCatalogKeys()">Save developer keys</button></details></section><section class="settings-card"><strong>Scalable open-data foundation</strong><p class="small muted">For production, BookGuide should keep its own searchable catalog built from freely reusable/open bibliographic data, then layer first-party content evidence on top.</p><div class="source-strategy"><div class="source-strategy-item"><strong>Open Library monthly bulk data</strong><span>Permanent base for works, editions, ISBNs, authors, publication metadata, ratings, and reading-log signals. The large-scale product should import the dump; the live API is used only for targeted beta lookups.</span></div><div class="source-strategy-item"><strong>Public-domain / openly licensed full text</strong><span>When a complete text is legitimately reusable, BookGuide can run full-text screening and build first-party concern evidence rather than copying third-party review prose.</span></div><div class="source-strategy-item"><strong>Author / publisher full text</strong><span>Rights holders can submit authorized manuscripts so newer and independent books can receive the same analysis path.</span></div><div class="source-strategy-item"><strong>BookGuide parent community</strong><span>Structured severity + frequency + where-it-happens + explicitness + fixed concern tags gradually fill the gaps for copyrighted books without public full text.</span></div></div><p class="small muted" style="margin-top:10px">External catalog services may help identify a specific edition during beta, but BookGuide's content guidance is not sourced from proprietary review catalogs.</p></section><section class="settings-card"><strong>🛡 Family-safe language filter</strong><p class="small muted">Always on. Strong profanity, vulgar sexual slang, and common slurs are masked anywhere they appear in visible app text. Structured parent reviews contain no free-text comments, which keeps moderation risk low. Book titles and catalog identifiers are still preserved internally so filtering cannot break search matching.</p></section><section class="settings-card"><strong>Author / publisher submissions</strong><p class="small muted">Missing books can be added manually and claimed by an authorized rights holder. TXT, MD, HTML, DOCX, and EPUB manuscripts can be analyzed locally in this prototype. The derived rating profile is saved; the manuscript text is not.</p></section><section class="settings-card"><strong>Data policy for the production app</strong><p class="small muted">Book identity and content analysis are separate systems. Use Open Library bulk data plus targeted public catalog lookups to identify books; use public/open full text, authorized manuscripts, and structured parent surveys for content guidance. Never manufacture category scores from metadata or copy prohibited review content.</p></section></div>`}
+function saveCatalogKeys(){state.googleBooksKey=(document.getElementById('googleBooksKey')?.value||'').trim();save();searchNotice='Developer catalog credentials saved on this device.';go('search')}function saveGoogleBooksKey(){saveCatalogKeys()}
+function toggleAvoid(k,on){if(on&&!state.avoid.includes(k))state.avoid.push(k);if(!on)state.avoid=state.avoid.filter(x=>x!==k);save()}
+function openAbout(){document.getElementById('modalContent').innerHTML=`<h2>About Book Content Guide</h2><p>This is a standalone prototype for structured book-content ratings.</p><div class="notice"><strong>Important:</strong> BookGuide is ISBN-first. Exact edition lookup checks public bibliographic sources behind one search flow, while author browsing is available for finding an author's books and known series. Production should keep a local searchable index imported from Open Library's monthly bulk data instead of treating live APIs as the database. Content guidance is a separate first-party system: detailed BookGuide reference profiles, public/open full-text screening, authorized author/publisher manuscripts, and structured parent surveys. Catalog metadata alone never creates a content rating. Parents never submit public free-text reviews.</div><button class="btn full" style="margin-top:14px" onclick="document.getElementById('modal').close()">Close</button>`;document.getElementById('modal').showModal()}
+applyTheme();
+render();
+applySafetyFilter(document.body);
+</script>
+</body>
+</html>
